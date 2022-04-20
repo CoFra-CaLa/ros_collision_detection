@@ -14,7 +14,7 @@
 #include <ros_collision_detection/collision_detection.h>
 
 CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
-:time_snychronizer(fused_objects_subscriber, ego_position_subscriber, 10)
+:approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber)
 {
     node_handle = nh;
     //fused_objects_subscriber = node_handle->subscribe<ros_collision_detection::PerceivedObjects>("/fused_objects", 100, &CollisionDetection::callbackFusedObjects, this);
@@ -30,7 +30,7 @@ void CollisionDetection::init()
 {
     fused_objects_subscriber.subscribe(*node_handle, "/fused_objects", 100);
     ego_position_subscriber.subscribe(*node_handle, "/ego_position", 100);
-    time_snychronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));
+    approximate_synchronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));
 }
 
 
