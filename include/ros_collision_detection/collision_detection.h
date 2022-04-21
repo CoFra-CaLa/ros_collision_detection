@@ -15,11 +15,11 @@
 
 #include <ros/ros.h>
 #include <message_filters/subscriber.h>
-//#include <message_filters/time_synchronizer.h>  
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 #include "ros_collision_detection/PerceivedObjects.h"
 #include "ros_collision_detection/SubjectVehicleMotion.h"
+#include "ros_collision_detection/ttc_calculator.h"
 
 
 typedef message_filters::sync_policies::ApproximateTime<ros_collision_detection::PerceivedObjects, ros_collision_detection::SubjectVehicleMotion> ApproximateSyncPolicy;
@@ -31,15 +31,13 @@ private:
     ros::NodeHandle *node_handle;
     message_filters::Subscriber<ros_collision_detection::PerceivedObjects> fused_objects_subscriber;
     message_filters::Subscriber<ros_collision_detection::SubjectVehicleMotion> ego_position_subscriber;
-    //message_filters::TimeSynchronizer<ros_collision_detection::PerceivedObjects, ros_collision_detection::SubjectVehicleMotion> time_snychronizer;
     message_filters::Synchronizer<ApproximateSyncPolicy> approximate_synchronizer;
     ros::Publisher collision_warning_publisher;
+    TTCCalculator ttc_calculator;
 
 public:
     CollisionDetection(ros::NodeHandle *nh);
     ~CollisionDetection();
-    void callbackFusedObjects(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects);
-    void callbackEgoPosition(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion);
     void callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg);
     void init();
 

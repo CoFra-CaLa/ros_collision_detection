@@ -11,8 +11,19 @@
 
 #include "ros_collision_detection/ttc_calculator.h"
 
+
 TTCCalculator::TTCCalculator()
 {
+    ROS_INFO("In TTC Calculator constructor.");
+}
 
+TTCCalculator::~TTCCalculator()
+{
+
+}
+
+void TTCCalculator::calculateAllTTCs()
+{
+    ROS_INFO("In TTCCalculator::calculateAllTTCs().");
 }
 

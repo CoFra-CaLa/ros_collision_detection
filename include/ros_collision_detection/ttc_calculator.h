@@ -9,8 +9,12 @@
  * 
  */
 
-#ifndef _COLLISION_DETECTION_H_
-#define _COLLISION_DETECTION_H_
+#ifndef _TTC_CALCULATOR_H_
+#define _TTC_CALCULATOR_H_
+
+
+#include <ros/ros.h>
+
 
 class TTCCalculator
 {
@@ -23,4 +27,4 @@ public:
 
 };
 
-#endif // _COLLISION_DETECTION_H_
+#endif // _TTC_CALCULATOR_H_
