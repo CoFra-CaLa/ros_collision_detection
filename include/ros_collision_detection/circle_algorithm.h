@@ -23,13 +23,17 @@ class CircleAlgorithm : public TTCAlgorithm
     public:
         CircleAlgorithm();
         bool calculateTTC(
-            float x_i, float y_i, 
-            float length_xi, float length_yi, 
+            float x_i, 
+            float y_i, 
+            float length_xi, 
+            float length_yi, 
             float heading_i, 
             float speed_i, 
             float acceleration_i, 
-            float x_bj, float y_bj, 
-            float length_xj, float length_yj, 
+            float x_bj, 
+            float y_bj, 
+            float length_xj, 
+            float length_yj, 
             float heading_j, 
             float speed_j, 
             float acceleration_j,
