@@ -14,11 +14,14 @@
 
 
 #include <ros/ros.h>
+
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
+
 #include "ros_collision_detection/PerceivedObjects.h"
 #include "ros_collision_detection/SubjectVehicleMotion.h"
+
 #include "ros_collision_detection/ttc_calculator.h"
 
 

@@ -35,9 +35,7 @@ CollisionDetection::~CollisionDetection()
 
 void CollisionDetection::callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
 {
-    ttc_calculator.calculateAllTTCs();
-    ROS_INFO("Seq: %d: x_pos: %f", perceived_objects_msg->header.seq, perceived_objects_msg->perceived_objects[0].object_movement.position.x);
-    ROS_INFO("Seq: %d", subject_vehicle_motion_msg->header.seq);
+    ttc_calculator.calculateAllTTCs(perceived_objects_msg, subject_vehicle_motion_msg);
 }
 
 

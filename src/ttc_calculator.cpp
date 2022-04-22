@@ -15,6 +15,7 @@
 TTCCalculator::TTCCalculator()
 {
     ROS_INFO("In TTC Calculator constructor.");
+    ttc_algorithm = new CircleAlgorithm(); //TODO
 }
 
 TTCCalculator::~TTCCalculator()
@@ -22,8 +23,11 @@ TTCCalculator::~TTCCalculator()
 
 }
 
-void TTCCalculator::calculateAllTTCs()
+void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
 {
-    ROS_INFO("In TTCCalculator::calculateAllTTCs().");
+    ROS_INFO("In TTCCalculator::calculateAllTTCs:");
+    ROS_INFO("Seq: %d: x_pos: %f", perceived_objects_msg->header.seq, perceived_objects_msg->perceived_objects[0].object_movement.position.x);
+    ROS_INFO("Seq: %d", subject_vehicle_motion_msg->header.seq);
+    // TODO: calculate TTC with Algorithm for all contained PerceivedObjects
 }
 
