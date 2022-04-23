@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "collision_detecion");
     ros::NodeHandle nh;
-    CollisionDetection collision_detection (&nh);
+    CollisionDetection collision_detection(&nh);
 
     ros::spin();
 }

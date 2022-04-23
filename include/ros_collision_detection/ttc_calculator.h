@@ -25,7 +25,7 @@
 class TTCCalculator
 {
 private:
-    TTCAlgorithm *ttc_algorithm;
+    boost::shared_ptr<TTCAlgorithm> ttc_algorithm;
 
 public:
     TTCCalculator();

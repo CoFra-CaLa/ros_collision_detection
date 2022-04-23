@@ -12,10 +12,11 @@
 #include "ros_collision_detection/ttc_calculator.h"
 
 
+//TODO: where to create the concrete TTC Algorithm instance?
 TTCCalculator::TTCCalculator()
+:ttc_algorithm(new CircleAlgorithm())
 {
     ROS_INFO("In TTC Calculator constructor.");
-    ttc_algorithm = new CircleAlgorithm(); //TODO: where to create the concrete TTC Algorithm instance?
 }
 
 TTCCalculator::~TTCCalculator()
