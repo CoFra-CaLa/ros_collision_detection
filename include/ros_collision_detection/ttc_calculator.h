@@ -19,7 +19,6 @@
 #include "ros_collision_detection/SubjectVehicleMotion.h"
 
 #include "ros_collision_detection/ttc_algorithm.h"
-#include "ros_collision_detection/circle_algorithm.h"
 
 
 class TTCCalculator
@@ -30,6 +29,7 @@ private:
 public:
     TTCCalculator();
     ~TTCCalculator();
+    void setTTCAlgorithm(TTCAlgorithm *algorithm);
     void calculateAllTTCs(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg);
 
 };

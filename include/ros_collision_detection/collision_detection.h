@@ -24,6 +24,8 @@
 
 #include "ros_collision_detection/ttc_calculator.h"
 
+#include "ros_collision_detection/circle_algorithm.h"
+
 
 typedef message_filters::sync_policies::ApproximateTime<ros_collision_detection::PerceivedObjects, ros_collision_detection::SubjectVehicleMotion> ApproximateSyncPolicy;
 

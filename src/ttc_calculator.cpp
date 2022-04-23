@@ -14,7 +14,7 @@
 
 //TODO: where to create the concrete TTC Algorithm instance?
 TTCCalculator::TTCCalculator()
-:ttc_algorithm(new CircleAlgorithm())
+:ttc_algorithm(nullptr)
 {
     ROS_INFO("In TTC Calculator constructor.");
 }
@@ -22,6 +22,12 @@ TTCCalculator::TTCCalculator()
 TTCCalculator::~TTCCalculator()
 {
 
+}
+
+void TTCCalculator::setTTCAlgorithm(TTCAlgorithm *algorithm)
+{
+    ROS_INFO("TTCCalculator::setTTCAlgorithm: reset algorithm.");
+    ttc_algorithm.reset(algorithm);
 }
 
 void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)

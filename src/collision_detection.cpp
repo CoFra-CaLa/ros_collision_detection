@@ -17,6 +17,7 @@ CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
 :approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber)
 {
     node_handle = nh;
+    ttc_calculator.setTTCAlgorithm(new CircleAlgorithm()); // TODO: make choose of concrete algorithm configurable
     CollisionDetection::init();
 }
 
