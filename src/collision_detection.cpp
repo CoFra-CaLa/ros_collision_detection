@@ -13,6 +13,7 @@
 #include "ros_collision_detection/SubjectVehicleMotion.h"
 #include <ros_collision_detection/collision_detection.h>
 
+
 CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
 :approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber)
 {
@@ -23,6 +24,7 @@ CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
 
 void CollisionDetection::init()
 {
+    collision_check_result_publisher = node_handle->advertise<ros_collision_detection::CollisionCheckResult>("/collision_warning", 10);
     fused_objects_subscriber.subscribe(*node_handle, "/fused_objects", 100);
     ego_position_subscriber.subscribe(*node_handle, "/ego_position", 100);
     approximate_synchronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));

@@ -12,25 +12,25 @@
 #ifndef _TTC_ALGORITM_H_
 #define _TTC_ALGORITM_H_
 
+typedef struct {
+    float center_pos_x;
+    float center_pos_y; 
+    float length_x; 
+    float length_y; 
+    float heading;
+    float speed; 
+    float acceleration;
+} object_motion_t;
+
+
 class TTCAlgorithm
 {
     public:
-        virtual bool calculateTTC(
-            float x_i, float y_i, 
-            float length_xi, 
-            float length_yi, 
-            float heading_i, 
-            float speed_i, 
-            float acceleration_i, 
-            float x_bj, float y_bj, 
-            float length_xj, 
-            float length_yj, 
-            float heading_j, 
-            float speed_j, 
-            float acceleration_j,
-            double *ttc_output
+        virtual float calculateTTC(
+            const object_motion_t &subject_object_motion,
+            const object_motion_t &perceived_object_motion
         ) = 0; 
-
+        
 };
 
 #endif // _TTC_ALGORITM_H_

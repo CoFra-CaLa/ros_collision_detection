@@ -25,6 +25,8 @@ class TTCCalculator
 {
 private:
     boost::shared_ptr<TTCAlgorithm> ttc_algorithm;
+    object_motion_t createObjectMotionFromSubjectVehicleMotion(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg);
+    object_motion_t createObjectMotionFromPerceivedObjectMotion(const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg);
 
 public:
     TTCCalculator();

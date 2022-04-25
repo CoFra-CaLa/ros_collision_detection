@@ -16,26 +16,10 @@ CircleAlgorithm::CircleAlgorithm()
     ROS_INFO("In CircleAlgorithm constructor.");
 }
 
-bool CircleAlgorithm::calculateTTC(
-    float x_i, 
-    float y_i, 
-    float length_xi, 
-    float length_yi, 
-    float heading_i, 
-    float speed_i, 
-    float acceleration_i, 
-    float x_bj, 
-    float y_bj, 
-    float length_xj, 
-    float length_yj, 
-    float heading_j, 
-    float speed_j, 
-    float acceleration_j,
-    double *ttc_output
-)
+float CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion)
 {
     // TODO: implement according to formula
     ROS_INFO("In CircleAlgorithm::calculateTTC");
-    *ttc_output = 5.4321;
-    return true;
+    float ttc_output = 5.4321;
+    return ttc_output;
 }

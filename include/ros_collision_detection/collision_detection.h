@@ -21,6 +21,7 @@
 
 #include "ros_collision_detection/PerceivedObjects.h"
 #include "ros_collision_detection/SubjectVehicleMotion.h"
+#include "ros_collision_detection/CollisionCheckResult.h"
 
 #include "ros_collision_detection/ttc_calculator.h"
 
@@ -34,6 +35,7 @@ class CollisionDetection
 {
 private:
     ros::NodeHandle *node_handle;
+    ros::Publisher collision_check_result_publisher;
     message_filters::Subscriber<ros_collision_detection::PerceivedObjects> fused_objects_subscriber;
     message_filters::Subscriber<ros_collision_detection::SubjectVehicleMotion> ego_position_subscriber;
     message_filters::Synchronizer<ApproximateSyncPolicy> approximate_synchronizer;
