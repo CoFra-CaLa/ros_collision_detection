@@ -25,12 +25,11 @@ typedef struct {
 
 class TTCAlgorithm
 {
-    public:
-        virtual float calculateTTC(
-            const object_motion_t &subject_object_motion,
-            const object_motion_t &perceived_object_motion
-        ) = 0; 
-        
+public:
+    virtual double calculateTTC(
+        const object_motion_t &subject_object_motion,
+        const object_motion_t &perceived_object_motion
+    ) = 0; 
 };
 
 #endif // _TTC_ALGORITM_H_

@@ -37,7 +37,7 @@ object_motion_t TTCCalculator::createObjectMotionFromSubjectVehicleMotion(const 
     result.center_pos_x = subject_vehicle_motion_msg->vehicle_movement.position.x;
     result.center_pos_y = subject_vehicle_motion_msg->vehicle_movement.position.y;
     result.length_x = 5; // TODO: get length_xi, length_yi
-    result.length_y = 5; // TODO: get length_xi, length_yi
+    result.length_y = 2; // TODO: get length_xi, length_yi
     result.heading = subject_vehicle_motion_msg->vehicle_movement.heading;
     result.speed = subject_vehicle_motion_msg->vehicle_movement.speed;
     result.acceleration = subject_vehicle_motion_msg->vehicle_movement.acceleration;
@@ -55,8 +55,8 @@ object_motion_t TTCCalculator::createObjectMotionFromPerceivedObjectMotion(const
     float bumper_pos_y = perceived_object_motion_msg->object_movement.position.y;
     float heading = perceived_object_motion_msg->object_movement.heading;
     float x_length = perceived_object_motion_msg->x_length;
-    result.center_pos_x = bumper_pos_x - 0.5 * sin(heading) * x_length; // TODO: check for float/double converting issues
-    result.center_pos_y = bumper_pos_y - 0.5 * cos(heading) * x_length; // TODO: check for float/double converting issues
+    result.center_pos_x = bumper_pos_x - 0.5 * sin(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
+    result.center_pos_y = bumper_pos_y - 0.5 * cos(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
     result.length_x = x_length;
     result.length_y = perceived_object_motion_msg->y_length;
     result.heading = heading;
