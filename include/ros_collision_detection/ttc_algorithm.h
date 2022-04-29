@@ -12,6 +12,8 @@
 #ifndef _TTC_ALGORITM_H_
 #define _TTC_ALGORITM_H_
 
+#include <boost/optional.hpp>
+
 typedef struct {
     float center_pos_x;
     float center_pos_y; 
@@ -26,7 +28,7 @@ typedef struct {
 class TTCAlgorithm
 {
 public:
-    virtual double calculateTTC(
+    virtual boost::optional<double> calculateTTC(
         const object_motion_t &subject_object_motion,
         const object_motion_t &perceived_object_motion
     ) = 0; 

@@ -195,12 +195,12 @@ std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<dou
     
 }
 
-double CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion)
+boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion)
 {
     ROS_INFO("In CircleAlgorithm::calculateTTC");
     
-    // the Time To Collision return value
-    double ttc;
+    // the Time To Collision optional return value
+    boost::optional<double> ttc_optional;
 
     // TODO: remove print
     ROS_INFO("subject object motion:");
@@ -257,7 +257,6 @@ double CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motio
     coefficients[3] = computeCoefficientForPowerThree(accel_diff_sin_adjusted, accel_diff_cos_adjusted, speed_diff_sin_adjusted, speed_diff_cos_adjusted);
     coefficients[4] = computeCoefficientForPowerFour(accel_diff_square_sin_adjusted, accel_diff_square_cos_adjusted);
 
-    // TODO: prevent GSL ERROR: leading term of polynomial must be non-zero
     // compute the real roots of the polynomial equation with GSL
     std::vector<double> real_positive_roots = solvePolynomialEquationGSL(coefficients);
 
@@ -266,13 +265,12 @@ double CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motio
         // TODO: what to do when no TTC can be computed?
         ROS_INFO("CircleAlgorithm::calculateTTC: no real positive roots found.");
         // TODO: do not pass wrong ttc value
-        ttc = -1;
-        return ttc;
+        return ttc_optional;
     }
     
 
     // smallest real positive root is the TTC
-    ttc = *std::min_element(real_positive_roots.begin(), real_positive_roots.end());
+    ttc_optional = *std::min_element(real_positive_roots.begin(), real_positive_roots.end());
 
-    return ttc;
+    return ttc_optional;
 }

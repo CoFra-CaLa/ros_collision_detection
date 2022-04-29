@@ -66,6 +66,20 @@ object_motion_t TTCCalculator::createObjectMotionFromPerceivedObjectMotion(const
     return result;
 }
 
+void TTCCalculator::handleTTCResult(boost::optional<double> &ttc_optional, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg)
+{
+    if(ttc_optional)
+    {
+        // valid TTC result --> pass TTC, subject vehicle and perceived object to the Warning Generator
+        ROS_INFO("TTCCalculator::handleTTCResult: computed valid TTC %f for perceived object %d", *ttc_optional, perceived_object_motion_msg->object_movement.id);
+    }
+    else
+    {
+        // no valid TTC result --> only log
+        ROS_INFO("TTCCalculator::handleTTCResult: no valid TTC could be computed for perceived object %d", perceived_object_motion_msg->object_movement.id);
+    }
+}
+
 void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
 {
     ROS_INFO("In TTCCalculator::calculateAllTTCs:");
@@ -80,24 +94,15 @@ void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObj
     for(int i = 0; i < perceived_objects_count; i++)
     {
         ros_collision_detection::PerceivedObjectMotion perceived_object = perceived_objects_msg->perceived_objects[i];
-        object_motion_t perceived_object_motion = createObjectMotionFromPerceivedObjectMotion(boost::make_shared<ros_collision_detection::PerceivedObjectMotion>(perceived_object));
+        boost::shared_ptr<ros_collision_detection::PerceivedObjectMotion> perceived_object_msg = boost::make_shared<ros_collision_detection::PerceivedObjectMotion>(perceived_object);
+        object_motion_t perceived_object_motion = createObjectMotionFromPerceivedObjectMotion(perceived_object_msg);
         uint32_t perceived_object_id = perceived_object.object_movement.id;
         std::string perceived_object_type = perceived_object.object_type;
 
-        double ttc;
-
-        try
-        {
-            ttc = ttc_algorithm->calculateTTC(subject_vehicle_motion, perceived_object_motion);
-            // TODO: trigger the TTC warning output to publisher
-            ROS_INFO("TTCCalculator::calculateAllTTCs: TTC %f for perceived object %d.", ttc, perceived_object_id);
-        }
-        catch(const std::exception& e)
-        {
-            // TODO: Handle possible errors from computation
-            std::cerr << e.what() << '\n';
-        }
-
+        boost::optional<double> ttc_optional;   //!< contains either valid TTC or not
+        ttc_optional = ttc_algorithm->calculateTTC(subject_vehicle_motion, perceived_object_motion);
+        // TODO: trigger the TTC warning output to publisher
+        handleTTCResult(ttc_optional, subject_vehicle_motion_msg, perceived_object_msg);
     }
 }
 

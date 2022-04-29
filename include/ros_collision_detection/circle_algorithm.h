@@ -39,7 +39,7 @@ private:
 
 public:
     CircleAlgorithm();
-    double calculateTTC(
+    boost::optional<double> calculateTTC(
         const object_motion_t &subject_object_motion,
         const object_motion_t &perceived_object_motion
     ) override;
