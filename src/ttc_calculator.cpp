@@ -19,15 +19,30 @@ TTCCalculator::TTCCalculator()
     ROS_INFO("In TTC Calculator constructor.");
 }
 
-TTCCalculator::~TTCCalculator()
-{
-
-}
-
 void TTCCalculator::setTTCAlgorithm(TTCAlgorithm *algorithm)
 {
-    ROS_INFO("TTCCalculator::setTTCAlgorithm: reset algorithm.");
-    ttc_algorithm.reset(algorithm);
+    if(algorithm != nullptr)
+    {
+        ttc_algorithm.reset(algorithm);
+        ROS_INFO("TTCCalculator::setTTCAlgorithm: reset algorithm.");
+    }
+}
+
+void TTCCalculator::addWarningSignalCallback(const warning_signal_t::slot_type& signal_subscriber)
+{
+    warning_signal.connect(signal_subscriber);
+}
+
+void TTCCalculator::sendWarningSignalCallback(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg, double ttc)
+{
+    if(warning_signal.num_slots() > 0)
+    {
+        warning_signal(subject_vehicle_motion_msg, perceived_object_motion_msg, ttc);
+    }
+    else
+    {
+        ROS_INFO("TTCCalculator::sendWarningSignalCallback: no slot connected to warning_signal.");
+    }
 }
 
 object_motion_t TTCCalculator::createObjectMotionFromSubjectVehicleMotion(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
@@ -72,6 +87,7 @@ void TTCCalculator::handleTTCResult(boost::optional<double> &ttc_optional, const
     {
         // valid TTC result --> pass TTC, subject vehicle and perceived object to the Warning Generator
         ROS_INFO("TTCCalculator::handleTTCResult: computed valid TTC %f for perceived object %d", *ttc_optional, perceived_object_motion_msg->object_movement.id);
+        sendWarningSignalCallback(subject_vehicle_motion_msg, perceived_object_motion_msg, *ttc_optional);
     }
     else
     {

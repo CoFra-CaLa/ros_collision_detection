@@ -24,9 +24,10 @@
 #include "ros_collision_detection/CollisionCheckResult.h"
 
 #include "ros_collision_detection/ttc_calculator.h"
+#include "ros_collision_detection/warning_generator.h"
 
 #include "ros_collision_detection/circle_algorithm.h"
-
+#include "ros_collision_detection/ttc_only_warning_algorithm.h"
 
 typedef message_filters::sync_policies::ApproximateTime<ros_collision_detection::PerceivedObjects, ros_collision_detection::SubjectVehicleMotion> ApproximateSyncPolicy;
 
@@ -41,10 +42,10 @@ private:
     message_filters::Synchronizer<ApproximateSyncPolicy> approximate_synchronizer;
     ros::Publisher collision_warning_publisher;
     TTCCalculator ttc_calculator;
+    WarningGenerator warning_generator;
 
 public:
     CollisionDetection(ros::NodeHandle *nh);
-    ~CollisionDetection();
     void callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg);
     void init();
 

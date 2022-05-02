@@ -9,16 +9,23 @@
  * 
  */
 
-#include "ros_collision_detection/PerceivedObjects.h"
-#include "ros_collision_detection/SubjectVehicleMotion.h"
+
 #include <ros_collision_detection/collision_detection.h>
 
 
 CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
-:approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber)
+:approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber),
+warning_generator(collision_check_result_publisher)
 {
     node_handle = nh;
-    ttc_calculator.setTTCAlgorithm(new CircleAlgorithm()); // TODO: make choose of concrete algorithm configurable
+
+    // initialize ttc_calculator and warning_generator
+    ttc_calculator.setTTCAlgorithm(new CircleAlgorithm());                              // TODO: make choose of concrete algorithm configurable
+    warning_generator.setWarningGeneratorAlgorithm(new TTCOnlyWarningAlgorithm());      // TODO: make choose of concrete algorithm configurable
+
+    // register callback from ttc_calculator to warning_generator
+    ttc_calculator.addWarningSignalCallback(boost::bind(&WarningGenerator::createWarning, &warning_generator, _1, _2, _3)); 
+
     CollisionDetection::init();
 }
 
@@ -28,12 +35,6 @@ void CollisionDetection::init()
     fused_objects_subscriber.subscribe(*node_handle, "/fused_objects", 100);
     ego_position_subscriber.subscribe(*node_handle, "/ego_position", 100);
     approximate_synchronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));
-}
-
-
-CollisionDetection::~CollisionDetection()
-{
-    
 }
 
 void CollisionDetection::callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)

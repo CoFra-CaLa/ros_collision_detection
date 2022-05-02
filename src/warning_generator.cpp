@@ -24,7 +24,7 @@ void WarningGenerator::setWarningGeneratorAlgorithm(WarningGeneratorAlgorithm *a
     if(algorithm != nullptr)
     {
         warning_generator_algorithm.reset(algorithm);
-        ROS_INFO("TTCCalculator::setWarningGeneratorAlgorithm: reset algorithm.");
+        ROS_INFO("WarningGenerator::setWarningGeneratorAlgorithm: reset algorithm.");
     }
 }
 
