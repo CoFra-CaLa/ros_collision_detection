@@ -36,18 +36,18 @@ class CollisionDetection
 {
 private:
     ros::NodeHandle *node_handle;
-    ros::Publisher collision_check_result_publisher;
     message_filters::Subscriber<ros_collision_detection::PerceivedObjects> fused_objects_subscriber;
     message_filters::Subscriber<ros_collision_detection::SubjectVehicleMotion> ego_position_subscriber;
     message_filters::Synchronizer<ApproximateSyncPolicy> approximate_synchronizer;
     ros::Publisher collision_warning_publisher;
     TTCCalculator ttc_calculator;
     WarningGenerator warning_generator;
+    void init();
 
 public:
     CollisionDetection(ros::NodeHandle *nh);
     void callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg);
-    void init();
+    
 
 };
 
