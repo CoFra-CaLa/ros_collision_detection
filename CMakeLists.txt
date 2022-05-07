@@ -128,9 +128,9 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ros_collision_detection.cpp
-# )
+add_library(circle_algorithm
+  src/circle_algorithm.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -207,6 +207,10 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_ros_collision_detection.cpp)
+catkin_add_gtest(test_circle_algorithm test/test_circle_algorithm.cpp)
+if(TARGET test_circle_algorithm)
+  target_link_libraries(test_circle_algorithm circle_algorithm ${catkin_LIBRARIES} GSL::gsl GSL::gslcblas)
+endif()
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

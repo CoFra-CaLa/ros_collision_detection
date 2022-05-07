@@ -208,6 +208,18 @@ boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &sub
     ROS_INFO("perceived object motion:");
     printReceivedMotionStruct(perceived_object_motion);
 
+    if(subject_object_motion.length_x <= 0 || subject_object_motion.length_y <= 0 || perceived_object_motion.length_x <= 0 || perceived_object_motion.length_y <= 0)
+    {
+        ROS_ERROR("length_x or length_y is not allowed to be zero or lower.");
+        return ttc_optional;
+    }
+
+    if(subject_object_motion.heading < 0 || subject_object_motion.heading > 360 || perceived_object_motion.heading < 0 || perceived_object_motion.heading > 360)
+    {
+        ROS_ERROR("heading value must be between 0 and 360 [degree].");
+        return ttc_optional;
+    }
+
     double sin_subject_obj_heading = computeSinFromHeading(subject_object_motion.heading);      //!< sin(alpha)
     double cos_subject_obj_heading = computeCosFromHeading(subject_object_motion.heading);      //!< cos(alpha)
     double sin_perceived_obj_heading = computeSinFromHeading(perceived_object_motion.heading);  //!< sin(beta)
