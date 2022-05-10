@@ -3,6 +3,12 @@ project(ros_collision_detection)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+if(CATKIN_ENABLE_TESTING)
+  SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+  SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
+  SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+  SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -141,7 +147,7 @@ add_library(circle_algorithm
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 ## add more C++ source files here
-add_executable(${PROJECT_NAME} src/collision_detection.cpp src/ttc_calculator.cpp src/circle_algorithm.cpp src/warning_generator.cpp src/ttc_only_warning_algorithm.cpp)
+add_executable(${PROJECT_NAME} src/collision_detection.cpp src/ttc_calculator.cpp src/warning_generator.cpp src/ttc_only_warning_algorithm.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,6 +162,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME collision_detection
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
    ${catkin_LIBRARIES}
+   circle_algorithm
    GSL::gsl GSL::gslcblas
 )
 
@@ -207,9 +214,11 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_ros_collision_detection.cpp)
-catkin_add_gtest(test_circle_algorithm test/test_circle_algorithm.cpp)
-if(TARGET test_circle_algorithm)
-  target_link_libraries(test_circle_algorithm circle_algorithm ${catkin_LIBRARIES} GSL::gsl GSL::gslcblas)
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(test_circle_algorithm test/test_circle_algorithm.cpp)
+  if(TARGET test_circle_algorithm)
+    target_link_libraries(test_circle_algorithm circle_algorithm ${catkin_LIBRARIES} GSL::gsl GSL::gslcblas)
+  endif()
 endif()
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})

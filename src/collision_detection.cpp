@@ -35,10 +35,16 @@ void CollisionDetection::init()
     fused_objects_subscriber.subscribe(*node_handle, "/fused_objects", 100);
     ego_position_subscriber.subscribe(*node_handle, "/ego_position", 100);
     approximate_synchronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));
+    
+    // log successful init
+    ROS_INFO("collision_detection node successfully initialized.");
 }
 
 void CollisionDetection::callback(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
 {
+    // log seq number of the two messages
+    ROS_DEBUG("TTCCalculator::calculateAllTTCs: Subject vehicle msg: seq = %d | perceived object msg: seq = %d.", subject_vehicle_motion_msg->header.seq, perceived_objects_msg->header.seq);
+    
     ttc_calculator.calculateAllTTCs(perceived_objects_msg, subject_vehicle_motion_msg);
 }
 

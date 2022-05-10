@@ -4,13 +4,13 @@
 #include <gtest/gtest.h>
 
 
-object_motion_t createObjectMotionHelper(float center_pos_x, float center_pos_y, float length_x, float length_y, float heading, float speed, float acceleration)
+object_motion_t createObjectMotionHelper(float center_pos_x, float center_pos_y, float length, float width, float heading, float speed, float acceleration)
 {
   object_motion_t result;
   result.center_pos_x = center_pos_x;
   result.center_pos_y = center_pos_y;
-  result.length_x = length_x;
-  result.length_y = length_y;
+  result.length = length;
+  result.width = width;
   result.heading = heading;
   result.speed = speed;
   result.acceleration = acceleration;
@@ -38,7 +38,7 @@ TEST(CircleAlgorithmWrongInput, negativeLengthXEgo)
 
   boost::optional<double> ttc_optional = ca.calculateTTC(ego_motion, perceived_motion);
 
-  // we expect a fail because length_x < 0
+  // we expect a fail because length < 0
   // ttc_optional is false if no ttc is delivered from calculateTTC
   EXPECT_FALSE(ttc_optional); 
 }
@@ -52,7 +52,7 @@ TEST(CircleAlgorithmWrongInput, negativeLengthYEgo)
 
   boost::optional<double> ttc_optional = ca.calculateTTC(ego_motion, perceived_motion);
 
-  // we expect a fail because length_y < 0
+  // we expect a fail because width < 0
   // ttc_optional is false if no ttc is delivered from calculateTTC
   EXPECT_FALSE(ttc_optional); 
 }
@@ -65,7 +65,7 @@ TEST(CircleAlgorithmWrongInput, negativeLengthXPerceived)
 
   boost::optional<double> ttc_optional = ca.calculateTTC(ego_motion, perceived_motion);
 
-  // we expect a fail because length_x < 0
+  // we expect a fail because length < 0
   // ttc_optional is false if no ttc is delivered from calculateTTC
   EXPECT_FALSE(ttc_optional); 
 }
@@ -79,7 +79,7 @@ TEST(CircleAlgorithmWrongInput, negativeLengthYPerceived)
 
   boost::optional<double> ttc_optional = ca.calculateTTC(ego_motion, perceived_motion);
 
-  // we expect a fail because length_y < 0
+  // we expect a fail because width < 0
   // ttc_optional is false if no ttc is delivered from calculateTTC
   EXPECT_FALSE(ttc_optional); 
 }

@@ -16,7 +16,7 @@
 TTCCalculator::TTCCalculator()
 :ttc_algorithm(nullptr)
 {
-    ROS_INFO("In TTC Calculator constructor.");
+    ROS_DEBUG("TTCCalculator::TTCCalculator constructor.");
 }
 
 void TTCCalculator::setTTCAlgorithm(TTCAlgorithm *algorithm)
@@ -24,7 +24,7 @@ void TTCCalculator::setTTCAlgorithm(TTCAlgorithm *algorithm)
     if(algorithm != nullptr)
     {
         ttc_algorithm.reset(algorithm);
-        ROS_INFO("TTCCalculator::setTTCAlgorithm: reset algorithm.");
+        ROS_DEBUG("TTCCalculator::setTTCAlgorithm: set new algorithm.");
     }
 }
 
@@ -41,7 +41,7 @@ void TTCCalculator::sendWarningSignalCallback(const ros_collision_detection::Sub
     }
     else
     {
-        ROS_INFO("TTCCalculator::sendWarningSignalCallback: no slot connected to warning_signal.");
+        ROS_WARN("TTCCalculator::sendWarningSignalCallback: no slot connected to warning_signal.");
     }
 }
 
@@ -51,8 +51,8 @@ object_motion_t TTCCalculator::createObjectMotionFromSubjectVehicleMotion(const 
     
     result.center_pos_x = subject_vehicle_motion_msg->vehicle_movement.position.x;
     result.center_pos_y = subject_vehicle_motion_msg->vehicle_movement.position.y;
-    result.length_x = 5; // TODO: get length_xi, length_yi
-    result.length_y = 2; // TODO: get length_xi, length_yi
+    result.length = 5; // TODO: get length_xi, length_yi
+    result.width = 2; // TODO: get length_xi, length_yi
     result.heading = subject_vehicle_motion_msg->vehicle_movement.heading;
     result.speed = subject_vehicle_motion_msg->vehicle_movement.speed;
     result.acceleration = subject_vehicle_motion_msg->vehicle_movement.acceleration;
@@ -72,8 +72,8 @@ object_motion_t TTCCalculator::createObjectMotionFromPerceivedObjectMotion(const
     float x_length = perceived_object_motion_msg->x_length;
     result.center_pos_x = bumper_pos_x - 0.5 * sin(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
     result.center_pos_y = bumper_pos_y - 0.5 * cos(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
-    result.length_x = x_length;
-    result.length_y = perceived_object_motion_msg->y_length;
+    result.length = x_length;   // TODO: decide which is length, and width
+    result.width = perceived_object_motion_msg->y_length;
     result.heading = heading;
     result.speed = perceived_object_motion_msg->object_movement.speed;
     result.acceleration = perceived_object_motion_msg->object_movement.acceleration;
@@ -86,27 +86,23 @@ void TTCCalculator::handleTTCResult(boost::optional<double> &ttc_optional, const
     if(ttc_optional)
     {
         // valid TTC result --> pass TTC, subject vehicle and perceived object to the Warning Generator
-        ROS_INFO("TTCCalculator::handleTTCResult: computed valid TTC %f for perceived object %d", *ttc_optional, perceived_object_motion_msg->object_movement.id);
+        ROS_INFO("TTCCalculator: computed valid TTC %f for perceived object with ID %d.", *ttc_optional, perceived_object_motion_msg->object_movement.id);
         sendWarningSignalCallback(subject_vehicle_motion_msg, perceived_object_motion_msg, *ttc_optional);
     }
     else
     {
         // no valid TTC result --> only log
-        ROS_INFO("TTCCalculator::handleTTCResult: no valid TTC could be computed for perceived object %d", perceived_object_motion_msg->object_movement.id);
+        ROS_INFO("TTCCalculator: no valid TTC could be computed for perceived object with ID %d.", perceived_object_motion_msg->object_movement.id);
     }
 }
 
 void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObjectsConstPtr& perceived_objects_msg, const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg)
 {
-    ROS_INFO("In TTCCalculator::calculateAllTTCs:");
-    ROS_INFO("Seq: %d: x_pos: %f", perceived_objects_msg->header.seq, perceived_objects_msg->perceived_objects[0].object_movement.position.x);
-    ROS_INFO("Seq: %d", subject_vehicle_motion_msg->header.seq);
-
-    // TODO: calculate TTC with Algorithm for all contained PerceivedObjects
     // store the subject vehicle's motion data (vehicle i) for use with all perceived objects
     object_motion_t subject_vehicle_motion = createObjectMotionFromSubjectVehicleMotion(subject_vehicle_motion_msg);
 
     int perceived_objects_count = perceived_objects_msg->perceived_objects.size();
+
     for(int i = 0; i < perceived_objects_count; i++)
     {
         ros_collision_detection::PerceivedObjectMotion perceived_object = perceived_objects_msg->perceived_objects[i];
@@ -117,7 +113,8 @@ void TTCCalculator::calculateAllTTCs(const ros_collision_detection::PerceivedObj
 
         boost::optional<double> ttc_optional;   //!< contains either valid TTC or not
         ttc_optional = ttc_algorithm->calculateTTC(subject_vehicle_motion, perceived_object_motion);
-        // TODO: trigger the TTC warning output to publisher
+        
+        // trigger the TTC warning output to publisher
         handleTTCResult(ttc_optional, subject_vehicle_motion_msg, perceived_object_msg);
     }
 }

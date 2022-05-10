@@ -11,38 +11,38 @@
 
 #include "ros_collision_detection/circle_algorithm.h"
 
-#define POLYNOMIAL_ARRAY_LENGTH 5
+#define POLYNOMIAL_ARRAY_LENGTH 5   //!< quartic equation has variable of degree 0 to 4
 
 
 CircleAlgorithm::CircleAlgorithm()
 {
-    ROS_INFO("In CircleAlgorithm constructor.");
+    ROS_DEBUG("CircleAlgorithm::CircleAlgorithm constructor.");
 }
 
-void CircleAlgorithm::printReceivedMotionStruct(const object_motion_t &object_motion)
+std::string CircleAlgorithm::convertMotionStructToString(const object_motion_t &object_motion)
 {
-	std::cout << "center_pos_x = " << object_motion.center_pos_x << std::endl;
-	std::cout << "center_pos_y = " << object_motion.center_pos_y << std::endl;
-	std::cout << "length_x = " << object_motion.length_x << std::endl;
-	std::cout << "length_y = " << object_motion.length_y << std::endl;
-	std::cout << "heading = " << object_motion.heading << std::endl;
-	std::cout << "speed = " << object_motion.speed << std::endl;
-	std::cout << "acceleration = " << object_motion.acceleration << std::endl << std::endl;
+	std::stringstream result;
+
+    result << "center_pos_x = " << object_motion.center_pos_x << std::endl;
+	result << "center_pos_y = " << object_motion.center_pos_y << std::endl;
+	result << "length = " << object_motion.length << std::endl;
+	result << "width = " << object_motion.width << std::endl;
+	result << "heading = " << object_motion.heading << std::endl;
+	result << "speed = " << object_motion.speed << std::endl;
+	result << "acceleration = " << object_motion.acceleration << std::endl;
+
+    return result.str();
 }
 
 double CircleAlgorithm::computeSinFromHeading(const float &heading)
 {
     double result = sin(heading * M_PI / 180.0);
-    ROS_INFO("CircleAlgorithm::computeSinFromHeading:");
-    std::cout << "sin(" << heading << ") = " << result << std::endl;
     return result;
 }
 
 double CircleAlgorithm::computeCosFromHeading(const float &heading)
 {
     double result = cos(heading * M_PI / 180.0);
-    ROS_INFO("CircleAlgorithm::computeCosFromHeading:");
-    std::cout << "cos(" << heading << ") = " << result << std::endl;
     return result;
 }
 
@@ -51,18 +51,16 @@ double CircleAlgorithm::computeHeadingAdjustedValue(const float &value_to_adjust
     return trigonometry_value * value_to_adjust;
 }
 
-double CircleAlgorithm::computeRadiusFromLength(const float &length_x, const float &length_y)
+double CircleAlgorithm::computeRadiusFromLength(const float &length, const float &width)
 {
-    // radius = 0.5 * sqrt((length_x)^2 + (length_y)^2)
-    return sqrt(length_x * length_x + length_y * length_y) / 2;
+    // radius = 0.5 * sqrt((length)^2 + (width)^2)
+    return sqrt(length * length + width * width) / 2;
 }
 
 double CircleAlgorithm::computeCoefficientForPowerFour(double &accel_diff_sq_sin_adj, double &accel_diff_sq_cos_adj)
 {
     // [ (sin(alpha) * a_i - sin(beta) * a_j)^2 + (cos(alpha) * a_i - cos(beta) * a_j)^2 ] * 0.25
     double result = (accel_diff_sq_sin_adj + accel_diff_sq_cos_adj) / 4;
-    ROS_INFO("CircleAlgorithm::computeCoefficientForPowerFour:");
-    std::cout << accel_diff_sq_sin_adj << " + " << accel_diff_sq_cos_adj << " / 4 = " << result << std::endl;
     return result;
 }
 
@@ -108,11 +106,11 @@ int CircleAlgorithm::getHighestPolynomialNonZeroDegree(boost::array<double, 5> &
             break;
         } 
     }
-    // TODO: remove print
-    ROS_INFO("CircleAlgorithm::getHighestPolynomialNonZeroDegree: %d", highest_non_zero_degree);
-    return highest_non_zero_degree;
-    
 
+    // log highest non-zero polynomial degree
+    ROS_DEBUG("CircleAlgorithm::getHighestPolynomialNonZeroDegree: Highest polynomial degree: %d", highest_non_zero_degree);
+
+    return highest_non_zero_degree;
 }
 
 std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<double, POLYNOMIAL_ARRAY_LENGTH> &coefficients)
@@ -120,10 +118,11 @@ std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<dou
     // the real positive roots to be returned
     std::vector<double> real_positive_roots;
 
-    // TODO: remove info output
+    // log coefficients
+    ROS_DEBUG("CircleAlgorithm::solvePolynomialEquationGSL: computed coefficients:");
     for(int i = 0; i < POLYNOMIAL_ARRAY_LENGTH; i++)
     {
-        ROS_INFO("coefficient%d = %f", i, coefficients.at(i));
+        ROS_DEBUG("coefficient %d = %f", i, coefficients.at(i));
     }
 
     // get the highest degree of the polynomial coefficient that is not zero
@@ -138,7 +137,6 @@ std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<dou
     }
 
     int polynomial_array_length_adjusted = highest_polynomial_degree_nzero + 1; //!< adjusted length of the polynomial coefficient array for GSL
-
 
     // prepare array of coefficients for GSL
     double poly_coefficients[polynomial_array_length_adjusted];
@@ -165,58 +163,55 @@ std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<dou
         ROS_ERROR("CircleAlgorithm::solvePolynomialEquationGSL: GSL error");
     }
 
-    // TODO: remove test code
+    // log results from GSL
+    ROS_DEBUG("CircleAlgorithm::solvePolynomialEquationGSL: results from GSL: ");
     for(int i = 0; i < polynomial_array_length_adjusted; i++)
     {
-        printf ("result%d = %+.18f %+.18f\n",i, complex_results[2*i], complex_results[2*i+1]);
+        ROS_DEBUG("result %d | real = %+.18f | imag = %+.18f",i, complex_results[2*i], complex_results[2*i+1]);
     }
 
     // populate result vector only with real roots
     for (int i = 0; i < polynomial_array_length_adjusted; i++)
     {
-        if(complex_results[2*i+1] == 0) // TODO: might need approximate check instead of exact check
+        // TODO: might need approximate check instead of exact check
+        if(complex_results[2*i+1] == 0)   // check if imaginary part is zero --> root is real
         {
-            ROS_INFO("CircleAlgorithm::solvePolynomialEquationGSL: result%d is real: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
+            ROS_DEBUG("CircleAlgorithm::solvePolynomialEquationGSL: result %d is real: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
             
-            if (complex_results[2*i] > 0)
+            if (complex_results[2*i] > 0) // check if real root is positive
             {
                 // only real positive roots are returned
                 real_positive_roots.push_back(complex_results[2*i]);
-                ROS_INFO("CircleAlgorithm::solvePolynomialEquationGSL: result%d is real and positive: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
+                ROS_DEBUG("CircleAlgorithm::solvePolynomialEquationGSL: result %d is real and positive: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
             }
         }
         else
         {
-            ROS_INFO("CircleAlgorithm::solvePolynomialEquationGSL: result%d is complex: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
+            ROS_DEBUG("CircleAlgorithm::solvePolynomialEquationGSL: result %d is complex: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
         }
     }
 
-    return real_positive_roots;
-    
+    return real_positive_roots;   
 }
 
 boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion)
-{
-    ROS_INFO("In CircleAlgorithm::calculateTTC");
-    
+{   
     // the Time To Collision optional return value
     boost::optional<double> ttc_optional;
 
-    // TODO: remove print
-    ROS_INFO("subject object motion:");
-    printReceivedMotionStruct(subject_object_motion);
-    ROS_INFO("perceived object motion:");
-    printReceivedMotionStruct(perceived_object_motion);
+    // log the received object motions
+    ROS_DEBUG_STREAM("subject object motion: \n" << convertMotionStructToString(subject_object_motion));
+    ROS_DEBUG_STREAM("perceived object motion: \n" << convertMotionStructToString(perceived_object_motion));
 
-    if(subject_object_motion.length_x <= 0 || subject_object_motion.length_y <= 0 || perceived_object_motion.length_x <= 0 || perceived_object_motion.length_y <= 0)
+    if(subject_object_motion.length <= 0 || subject_object_motion.width <= 0 || perceived_object_motion.length <= 0 || perceived_object_motion.width <= 0)
     {
-        ROS_ERROR("length_x or length_y is not allowed to be zero or lower.");
+        ROS_ERROR("CircleAlgorithm::calculateTTC: length or width is not allowed to be zero or lower.");
         return ttc_optional;
     }
 
     if(subject_object_motion.heading < 0 || subject_object_motion.heading > 360 || perceived_object_motion.heading < 0 || perceived_object_motion.heading > 360)
     {
-        ROS_ERROR("heading value must be between 0 and 360 [degree].");
+        ROS_ERROR("CircleAlgorithm::calculateTTC: heading value must be in range [0; 360].");
         return ttc_optional;
     }
 
@@ -235,8 +230,8 @@ boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &sub
     double speed_perceived_obj_sin_adjusted = computeHeadingAdjustedValue(perceived_object_motion.speed, sin_perceived_obj_heading);    //!< sin(beta) * v_j
     double speed_perceived_obj_cos_adjusted = computeHeadingAdjustedValue(perceived_object_motion.speed, cos_perceived_obj_heading);    //!< cos(beta) * v_j
 
-    double radius_subject_obj = computeRadiusFromLength(subject_object_motion.length_x, subject_object_motion.length_y);        //!< r_i
-    double radius_perceived_obj = computeRadiusFromLength(perceived_object_motion.length_x, perceived_object_motion.length_y);  //!< r_j
+    double radius_subject_obj = computeRadiusFromLength(subject_object_motion.length, subject_object_motion.width);        //!< r_i
+    double radius_perceived_obj = computeRadiusFromLength(perceived_object_motion.length, perceived_object_motion.width);  //!< r_j
 
     // differences between subject object's values and perceived object's values
     double accel_diff_sin_adjusted = accel_subject_obj_sin_adjusted - accel_perceived_obj_sin_adjusted; //!< sin(alpha) * a_i - sin(beta) * a_j
@@ -274,13 +269,13 @@ boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &sub
 
     if (real_positive_roots.empty())
     {
-        // TODO: what to do when no TTC can be computed?
-        ROS_INFO("CircleAlgorithm::calculateTTC: no real positive roots found.");
-        // TODO: do not pass wrong ttc value
+        // no real positive root found --> no TTC could be computed
+        ROS_DEBUG("CircleAlgorithm::calculateTTC: no real positive roots found.");
+
+        // return empty optional
         return ttc_optional;
     }
     
-
     // smallest real positive root is the TTC
     ttc_optional = *std::min_element(real_positive_roots.begin(), real_positive_roots.end());
 

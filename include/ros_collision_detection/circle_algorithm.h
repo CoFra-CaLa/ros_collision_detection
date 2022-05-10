@@ -24,11 +24,11 @@
 class CircleAlgorithm : public TTCAlgorithm
 {
 private:
-    void printReceivedMotionStruct(const object_motion_t &object_motion);
+    std::string convertMotionStructToString(const object_motion_t &object_motion);
 	double computeSinFromHeading(const float &heading);
     double computeCosFromHeading(const float &heading);
     double computeHeadingAdjustedValue(const float &value_to_adjust, const double &trigonometry_value);
-    double computeRadiusFromLength(const float &length_x, const float &length_y);
+    double computeRadiusFromLength(const float &length, const float &width);
     double computeCoefficientForPowerFour(double &accel_diff_sq_sin_adj, double &accel_diff_sq_cos_adj);
     double computeCoefficientForPowerThree(double &accel_diff_sin_adj, double &accel_diff_cos_adj, double &speed_diff_sin_adj, double &speed_diff_cos_adj);
     double computeCoefficientForPowerTwo(double &accel_diff_sin_adj, double &accel_diff_cos_adj, double &speed_diff_sq_sin_adj, double &speed_diff_sq_cos_adj, double &center_pos_x_diff, double &center_pos_y_diff);

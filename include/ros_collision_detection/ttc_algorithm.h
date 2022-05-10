@@ -17,8 +17,8 @@
 typedef struct {
     float center_pos_x;
     float center_pos_y; 
-    float length_x; 
-    float length_y; 
+    float length;   //!< the longer side of the object
+    float width;    //!< the shorter side of the object
     float heading;
     float speed; 
     float acceleration;

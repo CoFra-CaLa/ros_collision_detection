@@ -16,7 +16,7 @@ WarningGenerator::WarningGenerator(ros::Publisher &publisher)
 :warning_generator_algorithm(nullptr),
 collision_warning_publisher(publisher)
 {
-    ROS_INFO("In Warning Generator constructor.");
+    ROS_DEBUG("WarningGenerator::WarningGenerator constructor.");
 }
 
 void WarningGenerator::setWarningGeneratorAlgorithm(WarningGeneratorAlgorithm *algorithm)
@@ -24,14 +24,14 @@ void WarningGenerator::setWarningGeneratorAlgorithm(WarningGeneratorAlgorithm *a
     if(algorithm != nullptr)
     {
         warning_generator_algorithm.reset(algorithm);
-        ROS_INFO("WarningGenerator::setWarningGeneratorAlgorithm: reset algorithm.");
+        ROS_DEBUG("WarningGenerator::setWarningGeneratorAlgorithm: set new algorithm.");
     }
 }
 
 void WarningGenerator::setCollisionWarningPublisher(ros::Publisher &publisher)
 {
     collision_warning_publisher = publisher;
-    ROS_INFO("TTCCalculator::setCollisionWarningPublisher: reset publisher.");
+    ROS_DEBUG("TTCCalculator::setCollisionWarningPublisher: set new publisher.");
 }
 
 void WarningGenerator::createWarning(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg, double ttc)
@@ -42,6 +42,6 @@ void WarningGenerator::createWarning(const ros_collision_detection::SubjectVehic
     collision_check_msg.ttc = (float) ttc;  // convert double to float for publishing
     collision_check_msg.result_type = warning_generator_algorithm->generateWarning(subject_vehicle_motion_msg, perceived_object_motion_msg, ttc);
 
-    ROS_INFO("WarningGenerator::createWarning: perceived object %d has TTC %f with result type %d.", perceived_object_motion_msg->object_movement.id, collision_check_msg.ttc, collision_check_msg.result_type);
+    ROS_INFO("WarningGenerator: perceived object with ID %d has TTC %f with result type %d.", perceived_object_motion_msg->object_movement.id, collision_check_msg.ttc, collision_check_msg.result_type);
     collision_warning_publisher.publish(collision_check_msg);
 }
