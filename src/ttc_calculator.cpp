@@ -1,7 +1,7 @@
 /**
  * @file ttc_calculator.cpp
  * @author Michael Wittmann (miw2006@thi.de)
- * @brief 
+ * @brief Implementation of the methods of TTC Calculator class.
  * @version 0.1
  * @date 2022-04-15
  * 

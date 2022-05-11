@@ -1,7 +1,7 @@
 /**
  * @file circle_algorithm.cpp
  * @author Michael Wittmann (miw2006@thi.de)
- * @brief 
+ * @brief Implementation of the methods of Circle Algorithm class.
  * @version 0.1
  * @date 2022-04-22
  * 
@@ -46,9 +46,9 @@ double CircleAlgorithm::computeCosFromHeading(const float &heading)
     return result;
 }
 
-double CircleAlgorithm::computeHeadingAdjustedValue(const float &value_to_adjust, const double &trigonometry_value)
+double CircleAlgorithm::computeHeadingAdjustedValue(const float &value_to_adjust, const double &trigonometric_value)
 {
-    return trigonometry_value * value_to_adjust;
+    return trigonometric_value * value_to_adjust;
 }
 
 double CircleAlgorithm::computeRadiusFromLength(const float &length, const float &width)
@@ -196,7 +196,7 @@ std::vector<double> CircleAlgorithm::solvePolynomialEquationGSL(boost::array<dou
 
 boost::optional<double> CircleAlgorithm::calculateTTC(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion)
 {   
-    // the Time To Collision optional return value
+    // the Time-To-Collision optional return value
     boost::optional<double> ttc_optional;
 
     // log the received object motions

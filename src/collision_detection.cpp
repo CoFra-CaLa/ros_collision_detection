@@ -1,7 +1,7 @@
 /**
  * @file collision_detection.cpp
  * @author Michael Wittmann (miw2006@thi.de)
- * @brief 
+ * @brief Implementation of the main function of the node and implementation of methods of Collision Detection class.
  * @version 0.1
  * @date 2022-04-14
  * 

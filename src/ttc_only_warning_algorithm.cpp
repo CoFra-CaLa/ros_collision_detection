@@ -1,7 +1,7 @@
 /**
  * @file ttc_only_warning_algorithm.cpp
  * @author Michael Wittmann (miw2006@thi.de)
- * @brief 
+ * @brief Implementation of the methods of TTC Only Warning Algorithm class.
  * @version 0.1
  * @date 2022-04-30
  * 
@@ -10,6 +10,7 @@
  */
 
 #include "ros_collision_detection/ttc_only_warning_algorithm.h"
+
 
 ResultType TTCOnlyWarningAlgorithm::generateWarning(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg, double ttc)
 {
