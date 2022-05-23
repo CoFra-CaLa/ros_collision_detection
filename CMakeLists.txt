@@ -138,6 +138,10 @@ add_library(circle_algorithm
   src/circle_algorithm.cpp
 )
 
+add_library(n_circle_algorithm
+  src/n_circle_algorithm.cpp
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -163,6 +167,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME collision_detection
 target_link_libraries(${PROJECT_NAME}
    ${catkin_LIBRARIES}
    circle_algorithm
+   n_circle_algorithm
    GSL::gsl GSL::gslcblas
 )
 

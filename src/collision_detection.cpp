@@ -20,7 +20,9 @@ warning_generator(collision_warning_publisher)
     node_handle = nh;
 
     // initialize ttc_calculator and warning_generator
-    ttc_calculator.setTTCAlgorithm(new CircleAlgorithm());                              // TODO: make choose of concrete algorithm configurable
+    //ttc_calculator.setTTCAlgorithm(new CircleAlgorithm());                            // TODO: make choose of concrete algorithm configurable
+    int n_circles = 2;
+    ttc_calculator.setTTCAlgorithm(new NCircleAlgorithm(n_circles));                    // TODO: make choose of concrete algorithm configurable
     warning_generator.setWarningGeneratorAlgorithm(new TTCOnlyWarningAlgorithm());      // TODO: make choose of concrete algorithm configurable
 
     // register callback from ttc_calculator to warning_generator

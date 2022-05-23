@@ -27,6 +27,7 @@
 #include "ros_collision_detection/warning_generator.h"
 
 #include "ros_collision_detection/circle_algorithm.h"
+#include "ros_collision_detection/n_circle_algorithm.h"
 #include "ros_collision_detection/ttc_only_warning_algorithm.h"
 
 
