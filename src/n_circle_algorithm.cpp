@@ -17,7 +17,7 @@
 NCircleAlgorithm::NCircleAlgorithm(int circle_count)
 {
     n = circle_count;
-    ROS_INFO("NCircleAlgorithm::NCircleAlgorithm constructor with circle_count %d.", circle_count);
+    ROS_DEBUG("NCircleAlgorithm::NCircleAlgorithm constructor with circle_count %d.", circle_count);
 }
 
 std::string NCircleAlgorithm::convertMotionStructToString(const object_motion_t &object_motion)
@@ -55,18 +55,18 @@ double NCircleAlgorithm::computeHeadingAdjustedValue(const float &value_to_adjus
 double NCircleAlgorithm::computeFrontBumperPos(const float &center_pos, const double &trigonometric_value, const float &length)
 {
     double result = center_pos + (trigonometric_value * length / 2);
-    ROS_INFO("NCircleAlgorithm::computeFrontBumperPos: result %f, from value: %f, trigonometry: %f, length: %f", result, center_pos, trigonometric_value, length);
+    ROS_DEBUG("NCircleAlgorithm::computeFrontBumperPos: result: %f | from value: %f, trigonometry: %f, length: %f.", result, center_pos, trigonometric_value, length);
     return result;
 }
 
 double NCircleAlgorithm::computeRearBumperPos(const float &center_pos, const double &trigonometric_value, const float &length)
 {
     double result = center_pos - (trigonometric_value * length / 2);
-    ROS_INFO("NCircleAlgorithm::computeRearBumperPos: result %f, from value: %f, trigonometry: %f, length: %f", result, center_pos, trigonometric_value, length);
+    ROS_DEBUG("NCircleAlgorithm::computeRearBumperPos: result: %f | from value: %f, trigonometry: %f, length: %f.", result, center_pos, trigonometric_value, length);
     return result;
 }
 
-std::vector<boost::array<double, 2>> NCircleAlgorithm::computeAllCircleCenters(const double &front_bumper_pos_x, const double &front_bumper_pos_y, const double &sin_value, const double &cos_value, const double &length, const int &circle_count)
+std::vector<boost::array<double, 2>> NCircleAlgorithm::computeAllCircleCenters(const double &front_bumper_pos_x, const double &front_bumper_pos_y, const double &sin_heading, const double &cos_heading, const double &length, const int &circle_count)
 {
     std::vector<boost::array<double, 2>> circles;
 
@@ -75,15 +75,15 @@ std::vector<boost::array<double, 2>> NCircleAlgorithm::computeAllCircleCenters(c
         int factor = i + 1;
         double part_length = length / (circle_count + 1);
         boost::array<double, 2> circle_i_pos;
-        circle_i_pos[0] = computeCircleCenter(front_bumper_pos_x, factor, sin_value, part_length);
-        circle_i_pos[1] = computeCircleCenter(front_bumper_pos_y, factor, cos_value, part_length);
+        circle_i_pos[0] = computeCircleCenter(front_bumper_pos_x, factor, sin_heading, part_length);
+        circle_i_pos[1] = computeCircleCenter(front_bumper_pos_y, factor, cos_heading, part_length);
         circles.push_back(circle_i_pos);
     }
     
-    ROS_INFO("NCircleAlgorithm::computeAllCircleCenters: all circles from: (%f,%f) with sin: %f, cos: %f, length: %f, circle_count: %d", front_bumper_pos_x, front_bumper_pos_y, sin_value, cos_value, length, circle_count);
+    ROS_DEBUG("NCircleAlgorithm::computeAllCircleCenters: all circles from: (%f,%f) with sin: %f, cos: %f, length: %f, circle_count: %d.", front_bumper_pos_x, front_bumper_pos_y, sin_heading, cos_heading, length, circle_count);
     for(std::vector<boost::array<double, 2>>::iterator it = circles.begin(); it != circles.end(); ++it)
     {
-        ROS_INFO("circle center: (%f,%f)", (*it)[0], (*it)[1]);
+        ROS_DEBUG("circle center: (%f,%f).", (*it)[0], (*it)[1]);
     }
     return circles;
 }
@@ -99,144 +99,8 @@ double NCircleAlgorithm::computeRadius(const float &length, const float &width, 
     double part_length = length / (n + 1);
     double half_width = width / 2;
     double result = sqrt(part_length * part_length + half_width * half_width);
-    ROS_INFO("NCircleAlgorithm::computeRadius: radius = %f | length: %f, width: %f, circle_count: %d", result, length, width, circle_count);
+    ROS_DEBUG("NCircleAlgorithm::computeRadius: radius = %f | length: %f, width: %f, circle_count: %d", result, length, width, circle_count);
     return result;
-}
-
-double NCircleAlgorithm::computeCoefficientForPowerFour(double &accel_diff_sq_sin_adj, double &accel_diff_sq_cos_adj)
-{
-    // [ (sin(alpha) * a_i - sin(beta) * a_j)^2 + (cos(alpha) * a_i - cos(beta) * a_j)^2 ] * 0.25
-    return (accel_diff_sq_sin_adj + accel_diff_sq_cos_adj) / 4;
-}
-
-double NCircleAlgorithm::computeCoefficientForPowerThree(double &accel_diff_sin_adj, double &accel_diff_cos_adj, double &speed_diff_sin_adj, double &speed_diff_cos_adj)
-{
-    // (sin(alpha) * a_i - sin(beta) * a_j) * (sin(alpha) * v_i - sin(beta) * v_j) + 
-    // (cos(alpha) * a_i - cos(beta) * a_j) * (cos(alpha) * v_i - cos(beta) * v_j)
-    return accel_diff_sin_adj * speed_diff_sin_adj + accel_diff_cos_adj * speed_diff_cos_adj;
-}
-
-double NCircleAlgorithm::computeCoefficientForPowerTwo(double &accel_diff_sin_adj, double &accel_diff_cos_adj, double &speed_diff_sq_sin_adj, double &speed_diff_sq_cos_adj, double &center_pos_x_diff, double &center_pos_y_diff)
-{
-    // (sin(alpha) * v_i - sin(beta) * v_j)^2 + (sin(alpha) * a_i - sin(beta) * a_j) * (x_i - x_j) +
-    // (cos(alpha) * v_i - cos(beta) * v_j)^2 + (cos(alpha) * a_i - cos(beta) * a_j) * (y_i - y_j)
-    return speed_diff_sq_sin_adj + accel_diff_sin_adj * center_pos_x_diff + speed_diff_sq_cos_adj + accel_diff_cos_adj * center_pos_y_diff;
-}
-
-double NCircleAlgorithm::computeCoefficientForPowerOne(double &speed_diff_sin_adj, double &speed_diff_cos_adj, double &center_pos_x_diff, double &center_pos_y_diff)
-{
-    // [ (sin(alpha) * v_i - sin(beta) * v_j) * (x_i - x_j) +
-    //   (cos(alpha) * v_i - cos(beta) * v_j) * (y_i - y_j)  ] * 2
-    return (speed_diff_sin_adj * center_pos_x_diff + speed_diff_cos_adj * center_pos_y_diff) * 2;
-}
-
-double NCircleAlgorithm::computeCoefficientForPowerZero(double &center_pos_x_diff_sq, double &center_pos_y_diff_sq, double &radius_sum_sq)
-{
-    // (x_i - x_j)^2 + (y_i - y_j)^2 - (r_i + r_j)^2
-    return center_pos_x_diff_sq + center_pos_y_diff_sq - radius_sum_sq;
-}
-
-int NCircleAlgorithm::getHighestPolynomialNonZeroDegree(boost::array<double, 5> &coefficients)
-{
-    // polynomial coefficients are stored from lower degree to higher degree
-    int highest_non_zero_degree = 4;    //!< quartic equation
-    for(int i = 0; i < POLYNOMIAL_ARRAY_LENGTH - 1; i++)
-    {
-        if(coefficients.at(POLYNOMIAL_ARRAY_LENGTH - 1 - i) == 0)
-        {
-            highest_non_zero_degree--;
-        }
-        else
-        {
-            break;
-        } 
-    }
-
-    // log highest non-zero polynomial degree
-    ROS_INFO("NCircleAlgorithm::getHighestPolynomialNonZeroDegree: Highest polynomial degree: %d", highest_non_zero_degree);
-
-    return highest_non_zero_degree;
-}
-
-std::vector<double> NCircleAlgorithm::solvePolynomialEquationGSL(boost::array<double, POLYNOMIAL_ARRAY_LENGTH> &coefficients)
-{
-    // the real positive roots to be returned
-    std::vector<double> real_positive_roots;
-
-    // log coefficients
-    ROS_INFO("NCircleAlgorithm::solvePolynomialEquationGSL: computed coefficients:");
-    for(int i = 0; i < POLYNOMIAL_ARRAY_LENGTH; i++)
-    {
-        ROS_INFO("coefficient %d = %f", i, coefficients.at(i));
-    }
-
-    // get the highest degree of the polynomial coefficient that is not zero
-    int highest_polynomial_degree_nzero = getHighestPolynomialNonZeroDegree(coefficients);
-    if(highest_polynomial_degree_nzero < 1)
-    {
-        // all polynomials of degree >= 1 are zero
-        // no solution possible for P(t) = b_0 * t^0
-        // return empty real_positive_roots vector
-        ROS_ERROR("NCircleAlgorithm::solvePolynomialEquationGSL: polynomial degree is too low!");
-        return real_positive_roots;
-    }
-
-    int polynomial_array_length_adjusted = highest_polynomial_degree_nzero + 1; //!< adjusted length of the polynomial coefficient array for GSL
-
-    // prepare array of coefficients for GSL
-    double poly_coefficients[polynomial_array_length_adjusted];
-    for (int i = 0; i < polynomial_array_length_adjusted; i++)
-    {
-        poly_coefficients[i] = coefficients.at(i);
-    }
-
-    // array stores results of GSL, alternating real and imaginary components
-    double complex_results[2*(polynomial_array_length_adjusted - 1)];
-
-    // Workspace necessary for GSL to solve the polynomial equation
-    gsl_poly_complex_workspace *gsl_workspace = gsl_poly_complex_workspace_alloc(polynomial_array_length_adjusted);
-
-    // solve the polynomial equation defined by poly_coefficients and store results to array complex_results
-    int status = gsl_poly_complex_solve(poly_coefficients, polynomial_array_length_adjusted, gsl_workspace, complex_results);
-
-    // free GSL workspace
-    gsl_poly_complex_workspace_free(gsl_workspace);
-
-    if(status == GSL_EFAILED)
-    {
-        // TODO: handle GSL error
-        ROS_ERROR("NCircleAlgorithm::solvePolynomialEquationGSL: GSL error");
-    }
-
-    // log results from GSL
-    ROS_INFO("NCircleAlgorithm::solvePolynomialEquationGSL: results from GSL: ");
-    for(int i = 0; i < polynomial_array_length_adjusted; i++)
-    {
-        ROS_INFO("result %d | real = %+.18f | imag = %+.18f",i, complex_results[2*i], complex_results[2*i+1]);
-    }
-
-    // populate result vector only with real roots
-    for (int i = 0; i < polynomial_array_length_adjusted; i++)
-    {
-        // TODO: might need approximate check instead of exact check
-        if(complex_results[2*i+1] == 0)   // check if imaginary part is zero --> root is real
-        {
-            ROS_INFO("NCircleAlgorithm::solvePolynomialEquationGSL: result %d is real: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
-            
-            if (complex_results[2*i] > 0) // check if real root is positive
-            {
-                // only real positive roots are returned
-                real_positive_roots.push_back(complex_results[2*i]);
-                ROS_INFO("NCircleAlgorithm::solvePolynomialEquationGSL: result %d is real and positive: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
-            }
-        }
-        else
-        {
-            ROS_INFO("NCircleAlgorithm::solvePolynomialEquationGSL: result %d is complex: %+.18f %+.18f", i, complex_results[2*i], complex_results[2*i+1]);
-        }
-    }
-
-    return real_positive_roots;   
 }
 
 std::vector<double> NCircleAlgorithm::calculatePossibleTTCs(const object_motion_t &subject_object_motion, const object_motion_t &perceived_object_motion, int circle_count)
@@ -309,31 +173,29 @@ std::vector<double> NCircleAlgorithm::calculatePossibleTTCs(const object_motion_
     {
         for(int j = 0; j < n; j++)  // for all perceived obj circles
         {
-            ROS_INFO("NCircleAlgorithm::calculatePossibleTTCs Computing for i=%d, j=%d: subject (%f,%f) | perceived (%f,%f).", i, j, circles_subject_obj.at(i).at(0), circles_subject_obj.at(i).at(1), circles_perceived_obj.at(j).at(0), circles_perceived_obj.at(j).at(1));
+            ROS_DEBUG("NCircleAlgorithm::calculatePossibleTTCs Computing for i=%d, j=%d: subject (%f,%f) | perceived (%f,%f).", i, j, circles_subject_obj.at(i).at(0), circles_subject_obj.at(i).at(1), circles_perceived_obj.at(j).at(0), circles_perceived_obj.at(j).at(1));
             double circle_center_pos_x_diff = circles_subject_obj.at(i).at(0) - circles_perceived_obj.at(j).at(0);   //!< x_i - x_j
-            ROS_INFO("NCircleAlgorithm::calculatePossibleTTCs: circle center x pos diff: %f.", circle_center_pos_x_diff);
             double circle_center_pos_y_diff = circles_subject_obj.at(i).at(1) - circles_perceived_obj.at(j).at(1);   //!< y_i - y_j
-            ROS_INFO("NCircleAlgorithm::calculatePossibleTTCs: circle center y pos diff: %f.", circle_center_pos_y_diff);
 
             // squares of the differences        
             double circle_center_pos_x_diff_square = circle_center_pos_x_diff * circle_center_pos_x_diff;    //!< (x_i - x_j)^2
             double circle_center_pos_y_diff_square = circle_center_pos_y_diff * circle_center_pos_y_diff;    //!< (y_i - y_j)^2
 
             // prepare coefficients of the polynomial P(t) = b_0 + b_1 * t^1 + b_2 * t^2 + b_3 * t^3 + b_4 * t^4
-            coefficients[0] = computeCoefficientForPowerZero(circle_center_pos_x_diff_square, circle_center_pos_y_diff_square, radius_sum_square);
-            coefficients[1] = computeCoefficientForPowerOne(speed_diff_sin_adjusted, speed_diff_cos_adjusted, circle_center_pos_x_diff, circle_center_pos_y_diff);
-            coefficients[2] = computeCoefficientForPowerTwo(accel_diff_sin_adjusted, accel_diff_cos_adjusted, speed_diff_square_sin_adjusted, speed_diff_square_cos_adjusted, circle_center_pos_x_diff, circle_center_pos_y_diff);
-            coefficients[3] = computeCoefficientForPowerThree(accel_diff_sin_adjusted, accel_diff_cos_adjusted, speed_diff_sin_adjusted, speed_diff_cos_adjusted);
-            coefficients[4] = computeCoefficientForPowerFour(accel_diff_square_sin_adjusted, accel_diff_square_cos_adjusted);
+            coefficients[0] = circle_equation_solver::computeCoefficientForPowerZero(circle_center_pos_x_diff_square, circle_center_pos_y_diff_square, radius_sum_square);
+            coefficients[1] = circle_equation_solver::computeCoefficientForPowerOne(speed_diff_sin_adjusted, speed_diff_cos_adjusted, circle_center_pos_x_diff, circle_center_pos_y_diff);
+            coefficients[2] = circle_equation_solver::computeCoefficientForPowerTwo(accel_diff_sin_adjusted, accel_diff_cos_adjusted, speed_diff_square_sin_adjusted, speed_diff_square_cos_adjusted, circle_center_pos_x_diff, circle_center_pos_y_diff);
+            coefficients[3] = circle_equation_solver::computeCoefficientForPowerThree(accel_diff_sin_adjusted, accel_diff_cos_adjusted, speed_diff_sin_adjusted, speed_diff_cos_adjusted);
+            coefficients[4] = circle_equation_solver::computeCoefficientForPowerFour(accel_diff_square_sin_adjusted, accel_diff_square_cos_adjusted);
 
             // compute the real roots of the polynomial equation with GSL
-            real_positive_roots = solvePolynomialEquationGSL(coefficients);
+            real_positive_roots = circle_equation_solver::solvePolynomialEquationGSL(coefficients);
 
             if (real_positive_roots.empty())
             {
                 // no real positive root found --> no TTC could be computed
                 // no TTC between the two currently used circles
-                ROS_INFO("NCircleAlgorithm::calculatePossibleTTCs: no real positive roots found.");
+                ROS_DEBUG("NCircleAlgorithm::calculatePossibleTTCs: no real positive roots found.");
             }
             else
             {
@@ -354,8 +216,8 @@ boost::optional<double> NCircleAlgorithm::calculateTTC(const object_motion_t &su
     boost::optional<double> ttc_optional;
 
     // log the received object motions
-    ROS_INFO_STREAM("\nsubject object motion: \n" << convertMotionStructToString(subject_object_motion));
-    ROS_INFO_STREAM("perceived object motion: \n" << convertMotionStructToString(perceived_object_motion));
+    ROS_DEBUG_STREAM("\nsubject object motion: \n" << convertMotionStructToString(subject_object_motion));
+    ROS_DEBUG_STREAM("perceived object motion: \n" << convertMotionStructToString(perceived_object_motion));
 
     if(subject_object_motion.length <= 0 || subject_object_motion.width <= 0 || perceived_object_motion.length <= 0 || perceived_object_motion.width <= 0)
     {
@@ -382,10 +244,10 @@ boost::optional<double> NCircleAlgorithm::calculateTTC(const object_motion_t &su
     }
     
     // smallest of the possible TTCs is the TTC
-    ROS_INFO("NCircleAlgorithm::calculateTTC: list of possible TTCs:");
+    ROS_DEBUG("NCircleAlgorithm::calculateTTC: list of possible TTCs:");
     for(int i = 0; i < possible_ttc_list.size(); i++)
     {
-        ROS_INFO("possible ttc [%d] = %f", i, possible_ttc_list[i]);
+        ROS_DEBUG("possible ttc [%d] = %f", i, possible_ttc_list[i]);
     }
 
     ttc_optional = *std::min_element(possible_ttc_list.begin(), possible_ttc_list.end());

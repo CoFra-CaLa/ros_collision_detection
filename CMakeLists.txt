@@ -134,6 +134,10 @@ include_directories(
 )
 
 ## Declare a C++ library
+add_library(circle_equation_solver
+  src/circle_equation_solver.cpp
+)
+
 add_library(circle_algorithm
   src/circle_algorithm.cpp
 )
@@ -164,11 +168,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME collision_detection
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+target_link_libraries(circle_algorithm
+   ${catkin_LIBRARIES}
+   circle_equation_solver
+   GSL::gsl GSL::gslcblas
+)
+
+target_link_libraries(n_circle_algorithm
+   ${catkin_LIBRARIES}
+   circle_equation_solver
+   GSL::gsl GSL::gslcblas
+)
+
 target_link_libraries(${PROJECT_NAME}
    ${catkin_LIBRARIES}
    circle_algorithm
    n_circle_algorithm
-   GSL::gsl GSL::gslcblas
 )
 
 #############
@@ -222,7 +237,7 @@ target_link_libraries(${PROJECT_NAME}
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(test_circle_algorithm test/test_circle_algorithm.cpp)
   if(TARGET test_circle_algorithm)
-    target_link_libraries(test_circle_algorithm circle_algorithm ${catkin_LIBRARIES} GSL::gsl GSL::gslcblas)
+    target_link_libraries(test_circle_algorithm circle_algorithm ${catkin_LIBRARIES} circle_equation_solver GSL::gsl GSL::gslcblas)
   endif()
 endif()
 # if(TARGET ${PROJECT_NAME}-test)
