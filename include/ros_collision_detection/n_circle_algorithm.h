@@ -27,8 +27,6 @@
  * "New Algorithms for Computing the Time-To-Collision in Freeway Traffic Simulation Models"
  * by Jia Hou, George F. List and Xiucheng Guo, https://doi.org/10.1155/2014/761047.
  * 
- * @implements TTCAlgorithm
- * 
  */
 class NCircleAlgorithm : public TTCAlgorithm
 {

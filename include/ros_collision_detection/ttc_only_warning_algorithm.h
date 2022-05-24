@@ -19,8 +19,6 @@
 /**
  * @brief Class that generates collision warnings based on TTC thresholds only.
  * 
- * @implements WarningGeneratorAlgorithm
- * 
  */
 class TTCOnlyWarningAlgorithm: public WarningGeneratorAlgorithm
 {
