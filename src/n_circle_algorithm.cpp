@@ -59,13 +59,6 @@ double NCircleAlgorithm::computeFrontBumperPos(const float &center_pos, const do
     return result;
 }
 
-double NCircleAlgorithm::computeRearBumperPos(const float &center_pos, const double &trigonometric_value, const float &length)
-{
-    double result = center_pos - (trigonometric_value * length / 2);
-    ROS_DEBUG("NCircleAlgorithm::computeRearBumperPos: result: %f | from value: %f, trigonometry: %f, length: %f.", result, center_pos, trigonometric_value, length);
-    return result;
-}
-
 std::vector<boost::array<double, 2>> NCircleAlgorithm::computeAllCircleCenters(const double &front_bumper_pos_x, const double &front_bumper_pos_y, const double &sin_heading, const double &cos_heading, const double &length, const int &circle_count)
 {
     std::vector<boost::array<double, 2>> circles;
@@ -136,16 +129,12 @@ std::vector<double> NCircleAlgorithm::calculatePossibleTTCs(const object_motion_
     double speed_diff_square_sin_adjusted = speed_diff_sin_adjusted * speed_diff_sin_adjusted;  //!< (sin(alpha) * v_i - sin(beta) * v_j)^2
     double speed_diff_square_cos_adjusted = speed_diff_cos_adjusted * speed_diff_cos_adjusted;  //!< (cos(alpha) * v_i - cos(beta) * v_j)^2
 
-    // compute front bumper position and rear bumper position for subject object and perceived object
+    // compute front bumper position for subject object and perceived object
     double front_bumper_pos_x_subject_obj = computeFrontBumperPos(subject_object_motion.center_pos_x, sin_subject_obj_heading, subject_object_motion.length);
     double front_bumper_pos_y_subject_obj = computeFrontBumperPos(subject_object_motion.center_pos_y, cos_subject_obj_heading, subject_object_motion.length);
-    double rear_bumper_pos_x_subject_obj = computeRearBumperPos(subject_object_motion.center_pos_x, sin_subject_obj_heading, subject_object_motion.length);
-    double rear_bumper_pos_y_subject_obj = computeRearBumperPos(subject_object_motion.center_pos_y, cos_subject_obj_heading, subject_object_motion.length);
 
     double front_bumper_pos_x_perceived_obj = computeFrontBumperPos(perceived_object_motion.center_pos_x, sin_perceived_obj_heading, perceived_object_motion.length);
     double front_bumper_pos_y_perceived_obj = computeFrontBumperPos(perceived_object_motion.center_pos_y, cos_perceived_obj_heading, perceived_object_motion.length);
-    double rear_bumper_pos_x_perceived_obj = computeRearBumperPos(perceived_object_motion.center_pos_x, sin_perceived_obj_heading, perceived_object_motion.length);
-    double rear_bumper_pos_y_perceived_obj = computeRearBumperPos(perceived_object_motion.center_pos_y, cos_perceived_obj_heading, perceived_object_motion.length);
 
     // split the line [front_bumper_pos, rear_bumper_pos] for subject object and perceived object into n+1 equally long parts and
     // compute coordinates of the n circle centers for subject object and perceived object

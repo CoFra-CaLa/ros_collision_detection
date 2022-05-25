@@ -81,16 +81,6 @@ private:
     double computeFrontBumperPos(const float &center_pos, const double &trigonometric_value, const float &length);
 
     /**
-     * @brief Compute the coordinate of the rear bumper center.
-     * 
-     * @param center_pos The center coordinate of an object.
-     * @param trigonometric_value The trigonometric value from a trigonometric function.
-     * @param length The length of the object.
-     * @return The coodinate of the rear bumper center. 
-     */
-    double computeRearBumperPos(const float &center_pos, const double &trigonometric_value, const float &length);
-
-    /**
      * @brief Compute all n circle centers of the circles that represent the object from its front bumper position. 
      * 
      * @param front_bumper_pos_x The x coordinate of the front bumper center.
