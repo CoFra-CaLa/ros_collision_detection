@@ -1,0 +1,3 @@
+<launch>
+  <node name="collision_detection" pkg="ros_collision_detection" type="collision_detection" output="screen"/>
+</launch>
