@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_filters
   message_generation
+  pluginlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -146,6 +147,10 @@ add_library(n_circle_algorithm
   src/n_circle_algorithm.cpp
 )
 
+add_library(ttc_algorithm_plugins
+  src/ttc_algorithm_plugins.cpp
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -178,6 +183,12 @@ target_link_libraries(n_circle_algorithm
    ${catkin_LIBRARIES}
    circle_equation_solver
    GSL::gsl GSL::gslcblas
+)
+
+target_link_libraries(ttc_algorithm_plugins
+   circle_algorithm
+   n_circle_algorithm
+   ${catkin_LIBRARIES}
 )
 
 target_link_libraries(${PROJECT_NAME}

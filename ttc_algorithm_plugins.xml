@@ -1,0 +1,13 @@
+<library path="lib/libttc_algorithm_plugins">
+  <class name="CircleAlgorithm" type="CircleAlgorithm" base_class_type="TTCAlgorithm">
+    <description>
+      The Circle Algorithm with 1 circle per object.
+    </description>
+  </class>
+  <class name="NCircleAlgorithm" type="NCircleAlgorithm" base_class_type="TTCAlgorithm">
+    <description>
+      An extended version of the Circle Algorithm with n circles per object.
+    </description>
+  </class>
+</library>
+

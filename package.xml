@@ -33,6 +33,7 @@
   <!-- Examples: -->
   <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
   <!--   <depend>roscpp</depend> -->
+  <depend>pluginlib</depend>
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
   <!--   <exec_depend>roscpp</exec_depend> -->
@@ -64,6 +65,8 @@
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
+
+    <ros_collision_detection plugin="${prefix}/ttc_algorithm_plugins.xml" />
 
   </export>
 </package>
