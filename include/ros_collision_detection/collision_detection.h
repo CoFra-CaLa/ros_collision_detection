@@ -15,6 +15,8 @@
 
 #include <ros/ros.h>
 
+#include <pluginlib/class_loader.h>
+
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -49,6 +51,12 @@ private:
      * 
      */
     ros::NodeHandle *node_handle;
+
+    /**
+     * @brief Class loader that can load classes that implement interface TTCAlgorithm.
+     * 
+     */
+    pluginlib::ClassLoader<TTCAlgorithm> ttc_algorithm_loader;
 
     /**
      * @brief ROS message filters subscriber to topic "/fused_objects".
@@ -91,6 +99,30 @@ private:
      * 
      */
     void init();
+
+    /**
+     * @brief Initialize the ROS node from the launch parameters.
+     * 
+     */
+    void initFromLaunchParameters();
+
+    /**
+     * @brief Check the launch parameters and set defaults if necessary.
+     * 
+     */
+    void checkLaunchParameters();
+
+    /**
+     * @brief Load the necessary plugins for the TTC calculator.
+     * 
+     */
+    void loadPlugins();
+
+    /**
+     * @brief Initialize the node components with the launch parameters.
+     * 
+     */
+    void initComponents();
 
 public:
     /**

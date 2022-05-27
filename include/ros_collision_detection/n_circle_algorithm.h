@@ -129,7 +129,14 @@ public:
      * @brief Construct a new N Circle Algorithm object.
      * 
      */
-    NCircleAlgorithm(int circle_count);
+    NCircleAlgorithm();
+
+    /**
+     * @brief Initialize the N Circle Algorithm with the number of circles representing one object.
+     * 
+     * @param parameter_map A key-value map containing parameter names and parameter values. 
+     */
+    void init(parameter_map_t &parameter_map) override;
 
     /**
      * @brief Calculate the Time-To-Collision between the Subject Object Motion and the Perceived Object Motion using the polynomial equation from the Circle Algorithm with n circles.

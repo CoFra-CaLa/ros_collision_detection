@@ -11,13 +11,41 @@
 
 #include "ros_collision_detection/n_circle_algorithm.h"
 
+#define DEFAULT_CIRCLE_COUNT 1      //!< default number of circles if no circle_count is passed
+
 #define POLYNOMIAL_ARRAY_LENGTH 5   //!< quartic equation has variable of degree 0 to 4
 
 
-NCircleAlgorithm::NCircleAlgorithm(int circle_count)
+NCircleAlgorithm::NCircleAlgorithm()
 {
-    n = circle_count;
-    ROS_DEBUG("NCircleAlgorithm::NCircleAlgorithm constructor with circle_count %d.", circle_count);
+    ROS_INFO("NCircleAlgorithm::NCircleAlgorithm constructed.");
+}
+
+void NCircleAlgorithm::init(parameter_map_t &parameter_map)
+{
+    try
+    {
+        boost::variant<int, std::string> variant_circle_count = parameter_map.at("ttc_algorithm_circle_count");
+        if(int *circle_count_ptr = boost::get<int>(&variant_circle_count))
+        {
+            int cirlce_count = *circle_count_ptr;
+            if(cirlce_count > 1)
+            {
+                n = cirlce_count;
+                ROS_INFO("NCircleAlgorithm::init with n = %d.", cirlce_count);
+            }
+        }
+        else
+        {
+            n = DEFAULT_CIRCLE_COUNT;
+            ROS_ERROR("NCircleAlgorithm::init: 'ttc_algorithm_circle_count' could not be retrieved. Using default n=%d.", DEFAULT_CIRCLE_COUNT);
+        }
+    }
+    catch(const std::out_of_range &e)
+    {
+        n = DEFAULT_CIRCLE_COUNT;
+        ROS_ERROR("NCircleAlgorithm::init: no 'ttc_algorithm_circle_count' found. Using default n=%d.", DEFAULT_CIRCLE_COUNT);
+    }
 }
 
 std::string NCircleAlgorithm::convertMotionStructToString(const object_motion_t &object_motion)

@@ -16,7 +16,7 @@
 
 CircleAlgorithm::CircleAlgorithm()
 {
-    ROS_DEBUG("CircleAlgorithm::CircleAlgorithm constructor.");
+    ROS_INFO("CircleAlgorithm::CircleAlgorithm constructed.");
 }
 
 std::string CircleAlgorithm::convertMotionStructToString(const object_motion_t &object_motion)

@@ -56,6 +56,18 @@ private:
     warning_signal_t warning_signal;
 
     /**
+     * @brief The length of the vehicle that is considered the subject vehicle for this TTC Calculator instance.
+     * 
+     */
+    float length_subject_vehicle;
+
+    /**
+     * @brief The length of the vehicle that is considered the subject vehicle for this TTC Calculator instance.
+     * 
+     */
+    float width_subject_vehicle;
+
+    /**
      * @brief Call the callback function that is registered at the warning_signal.
      * 
      * @param subject_vehicle_motion_msg The Subject Vehicle Motion message used for TTC calculation.
@@ -105,7 +117,7 @@ public:
      * 
      * @param algorithm Pointer to an concrete instance of a class that implements the interface TTCAlgorithm.
      */
-    void setTTCAlgorithm(TTCAlgorithm *algorithm);
+    void setTTCAlgorithm(boost::shared_ptr<TTCAlgorithm> &algorithm);
 
     /**
      * @brief Add a callback function to the warning_signal that fulfills the type signature defined by warning_signal_t.
@@ -113,6 +125,14 @@ public:
      * @param slot The callback function to be added to the signal.
      */
     void addWarningSignalCallback(const warning_signal_t::slot_type& slot);
+
+    /**
+     * @brief Set the length and the width of the vehicle that is considered the subject vehicle for this TTC Calculator instance.
+     * 
+     * @param length The length of the subject vehicle.
+     * @param width The width of the subject vehicle.
+     */
+    void setSubjectVehicleDimensions(float length, float width);
 
     /**
      * @brief Calculate all TTCs between the Subject Vehicle Motion and all Perceived Object Motions.

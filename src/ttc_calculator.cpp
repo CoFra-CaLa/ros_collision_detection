@@ -11,26 +11,40 @@
 
 #include "ros_collision_detection/ttc_calculator.h"
 
+#define DEFAULT_LENGTH_SUBJECT_VEHICLE 5  //!< default passenger car length, see https://sumo.dlr.de/docs/Vehicle_Type_Parameter_Defaults.html
+#define DEFAULT_WIDTH_SUBJECT_VEHICLE 1.8 //!< default passenger car width, see https://sumo.dlr.de/docs/Vehicle_Type_Parameter_Defaults.html
 
-//TODO: where to create the concrete TTC Algorithm instance?
+
 TTCCalculator::TTCCalculator()
 :ttc_algorithm(nullptr)
 {
-    ROS_DEBUG("TTCCalculator::TTCCalculator constructor.");
+    setSubjectVehicleDimensions(DEFAULT_LENGTH_SUBJECT_VEHICLE, DEFAULT_WIDTH_SUBJECT_VEHICLE);
+    ROS_DEBUG("TTCCalculator::TTCCalculator constructed with default subject vehicle dimensions: length = %f, width = %f", length_subject_vehicle, width_subject_vehicle);
 }
 
-void TTCCalculator::setTTCAlgorithm(TTCAlgorithm *algorithm)
+void TTCCalculator::setTTCAlgorithm(boost::shared_ptr<TTCAlgorithm> &algorithm)
 {
-    if(algorithm != nullptr)
-    {
-        ttc_algorithm.reset(algorithm);
-        ROS_DEBUG("TTCCalculator::setTTCAlgorithm: set new algorithm.");
-    }
+    ttc_algorithm.swap(algorithm);
+    ROS_DEBUG("TTCCalculator::setTTCAlgorithm: set new algorithm.");
 }
 
 void TTCCalculator::addWarningSignalCallback(const warning_signal_t::slot_type& signal_subscriber)
 {
     warning_signal.connect(signal_subscriber);
+}
+
+void TTCCalculator::setSubjectVehicleDimensions(float length, float width)
+{
+    if(length > 0 && width > 0)
+    {
+        length_subject_vehicle = length;
+        width_subject_vehicle = width;
+        ROS_DEBUG("TTCCalculator::setSubjectVehicleDimensions: subject vehicle dimensions set to: length = %f, width = %f", length_subject_vehicle, width_subject_vehicle);
+    }
+    else
+    {
+        ROS_WARN("TTCCalculator::setSubjectVehicleDimensions: length = %f or width = %f not allowed. Subject vehicle dimensions not changed.", length, width);
+    }
 }
 
 void TTCCalculator::sendWarningSignalCallback(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg, double ttc)
@@ -51,8 +65,8 @@ object_motion_t TTCCalculator::createObjectMotionFromSubjectVehicleMotion(const 
     
     result.center_pos_x = subject_vehicle_motion_msg->vehicle_movement.position.x;
     result.center_pos_y = subject_vehicle_motion_msg->vehicle_movement.position.y;
-    result.length = 5; // TODO: get length_xi, length_yi
-    result.width = 2; // TODO: get length_xi, length_yi
+    result.length = length_subject_vehicle;
+    result.width = width_subject_vehicle;
     result.heading = subject_vehicle_motion_msg->vehicle_movement.heading;
     result.speed = subject_vehicle_motion_msg->vehicle_movement.speed;
     result.acceleration = subject_vehicle_motion_msg->vehicle_movement.acceleration;

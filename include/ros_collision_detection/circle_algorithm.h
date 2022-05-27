@@ -81,6 +81,15 @@ public:
     CircleAlgorithm();
 
     /**
+     * @brief Initialize the Circle Algorithm.
+     * 
+     * Overridden method from interface TTCAlgorithm. 
+     * 
+     * @param parameter_map A key-value map containing parameter names and parameter values.
+     */
+    void init(parameter_map_t &parameter_map) override {};
+
+    /**
      * @brief Calculate the Time-To-Collision between the Subject Object Motion and the Perceived Object Motion using the polynomial equation from the Circle Algorithm.
      * 
      * @param subject_object_motion Object Motion struct representing the Subject Object Motion.

@@ -12,8 +12,14 @@
 #ifndef _TTC_ALGORITM_H_
 #define _TTC_ALGORITM_H_
 
+#include <boost/variant.hpp>
 #include <boost/optional.hpp>
 
+/**
+ * @brief Map that includes the parameters for TTC Algorithm intialization.
+ * 
+ */
+typedef std::map<std::string, boost::variant<int, std::string>> parameter_map_t;
 
 /**
  * @brief Struct that represents a object's motion.
@@ -37,6 +43,13 @@ typedef struct {
 class TTCAlgorithm
 {
 public:
+    /**
+     * @brief Initialize the TTC Algorithm with the passed parameters.
+     * 
+     * @param parameter_map A key-value map containing parameter names and parameter values.
+     */
+    virtual void init(parameter_map_t &parameter_map) = 0;
+
     /**
      * @brief Calculate the Time-To-Collision between the Subject Object Motion and the Perceived Object Motion.
      * 
