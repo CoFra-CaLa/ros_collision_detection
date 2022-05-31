@@ -13,6 +13,8 @@
 #define _TTC_ONLY_WARNING_ALGORITHM_H_
 
 
+#include <ros/ros.h>
+
 #include "ros_collision_detection/warning_generator_algorithm.h"
 
 
@@ -23,6 +25,12 @@
 class TTCOnlyWarningAlgorithm: public WarningGeneratorAlgorithm
 {
 public:
+    /**
+     * @brief Construct a new TTCOnlyWarningAlgorithm object.
+     * 
+     */
+    TTCOnlyWarningAlgorithm();
+
     /**
      * @brief Generate a ResultType warning from the Subject Vehicle Motion, the Perceived Object Motion and the TTC only based on TTC thresholds.
      * 

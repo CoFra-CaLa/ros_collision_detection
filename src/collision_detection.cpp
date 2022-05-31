@@ -14,6 +14,7 @@
 
 // definition of default values for launch parameters
 #define DEFAULT_TTC_ALGORITHM_CLASSNAME "CircleAlgorithm"
+#define DEFAULT_WARNING_GENERATOR_ALGORITHM_CLASSNAME "TTCOnlyWarningAlgorithm"
 #define DEFAULT_TTC_ALGORITHM_CIRCLE_COUNT 1
 #define DEFAULT_SUBJECT_VEHICLE_LENGTH 5
 #define DEFAULT_SUBJECT_VEHICLE_WIDTH 1.8
@@ -21,6 +22,7 @@
 
 CollisionDetection::CollisionDetection(ros::NodeHandle *nh)
 :ttc_algorithm_loader("ros_collision_detection", "TTCAlgorithm"),
+warning_generator_algorithm_loader("ros_collision_detection", "WarningGeneratorAlgorithm"),
 approximate_synchronizer(ApproximateSyncPolicy(10), fused_objects_subscriber, ego_position_subscriber),
 warning_generator(collision_warning_publisher)
 {
@@ -32,8 +34,6 @@ void CollisionDetection::init()
 {
     // initialize the components with launch parameter values
     initFromLaunchParameters();
-
-    warning_generator.setWarningGeneratorAlgorithm(new TTCOnlyWarningAlgorithm());      // TODO: make choose of concrete algorithm configurable
 
     // register callback from ttc_calculator to warning_generator
     ttc_calculator.addWarningSignalCallback(boost::bind(&WarningGenerator::createWarning, &warning_generator, _1, _2, _3)); 
@@ -66,6 +66,13 @@ void CollisionDetection::checkLaunchParameters()
         // Default value for param "ttc_algorithm_classname" is DEFAULT_TTC_ALGORITHM_CLASSNAME
         node_handle->setParam("ttc_algorithm_classname", DEFAULT_TTC_ALGORITHM_CLASSNAME);
         ROS_WARN("CollisionDetection::loadPlugins: using default value for 'ttc_algorithm_classname'.");
+    }
+
+    if(!node_handle->hasParam("warning_generator_algorithm_classname"))
+    {
+        // Default value for param "warning_generator_algorithm_classname" is DEFAULT_WARNING_GENERATOR_ALGORITHM_CLASSNAME
+        node_handle->setParam("warning_generator_algorithm_classname", DEFAULT_WARNING_GENERATOR_ALGORITHM_CLASSNAME);
+        ROS_WARN("CollisionDetection::loadPlugins: using default value for 'warning_generator_algorithm_classname'.");
     }
 
     if(!node_handle->hasParam("ttc_algorithm_circle_count"))
@@ -125,6 +132,29 @@ void CollisionDetection::loadPlugins()
     else
     {
         ROS_FATAL("CollisionDetection::loadPlugins: parameter 'ttc_algorithm_classname' could not be retrieved.");
+        ros::shutdown();
+        exit(0);
+    }
+
+    std::string warning_generator_algorithm_classname; //!< The name of the Warning Generator Algorithm class to load
+    
+    if(node_handle->getParam("warning_generator_algorithm_classname", warning_generator_algorithm_classname))
+    {
+        try
+        {
+            boost::shared_ptr<WarningGeneratorAlgorithm> warning_generator_algorithm_ptr = warning_generator_algorithm_loader.createInstance(warning_generator_algorithm_classname);
+            warning_generator.setWarningGeneratorAlgorithm(warning_generator_algorithm_ptr);
+        }
+        catch(pluginlib::PluginlibException& e)
+        {
+            ROS_FATAL("CollisionDetection::loadPlugins: cannot load Warning Generator Algorithm plugin: %s", e.what());
+            ros::shutdown();
+            exit(0);
+        }
+    }
+    else
+    {
+        ROS_FATAL("CollisionDetection::loadPlugins: parameter 'warning_generator_algorithm_classname' could not be retrieved.");
         ros::shutdown();
         exit(0);
     }

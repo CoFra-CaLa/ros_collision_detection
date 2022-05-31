@@ -12,6 +12,11 @@
 #include "ros_collision_detection/ttc_only_warning_algorithm.h"
 
 
+TTCOnlyWarningAlgorithm::TTCOnlyWarningAlgorithm()
+{
+    ROS_INFO("TTCOnlyWarningAlgorithm::TTCOnlyWarningAlgorithm constructed.");
+}
+
 ResultType TTCOnlyWarningAlgorithm::generateWarning(const ros_collision_detection::SubjectVehicleMotionConstPtr& subject_vehicle_motion_msg, const ros_collision_detection::PerceivedObjectMotionConstPtr& perceived_object_motion_msg, double ttc)
 {
     // TTC thresholds like Honda Collision Mitgation Braking System (CMBS)

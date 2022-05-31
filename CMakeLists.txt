@@ -151,6 +151,10 @@ add_library(ttc_algorithm_plugins
   src/ttc_algorithm_plugins.cpp
 )
 
+add_library(warning_generator_algorithm_plugins
+  src/warning_generator_algorithm_plugins.cpp
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -188,6 +192,10 @@ target_link_libraries(n_circle_algorithm
 target_link_libraries(ttc_algorithm_plugins
    circle_algorithm
    n_circle_algorithm
+   ${catkin_LIBRARIES}
+)
+
+target_link_libraries(warning_generator_algorithm_plugins
    ${catkin_LIBRARIES}
 )
 

@@ -1,0 +1,7 @@
+<library path="lib/libwarning_generator_algorithm_plugins">
+  <class type="TTCOnlyWarningAlgorithm" base_class_type="WarningGeneratorAlgorithm">
+  <description>
+      Warning Generator Algorithm that only uses TTC thresholds to determine the warning level.
+  </description>
+  </class>
+</library>

@@ -67,6 +67,7 @@
     <!-- Other tools can request additional information be placed here -->
 
     <ros_collision_detection plugin="${prefix}/ttc_algorithm_plugins.xml" />
+    <ros_collision_detection plugin="${prefix}/warning_generator_algorithm_plugins.xml" />
 
   </export>
 </package>

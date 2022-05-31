@@ -59,6 +59,12 @@ private:
     pluginlib::ClassLoader<TTCAlgorithm> ttc_algorithm_loader;
 
     /**
+     * @brief Class loader that can load classes that implement interface WarningGeneratorAlgorithm.
+     * 
+     */
+    pluginlib::ClassLoader<WarningGeneratorAlgorithm> warning_generator_algorithm_loader;
+
+    /**
      * @brief ROS message filters subscriber to topic "/fused_objects".
      * 
      */

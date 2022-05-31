@@ -19,13 +19,10 @@ collision_warning_publisher(publisher)
     ROS_DEBUG("WarningGenerator::WarningGenerator constructor.");
 }
 
-void WarningGenerator::setWarningGeneratorAlgorithm(WarningGeneratorAlgorithm *algorithm)
+void WarningGenerator::setWarningGeneratorAlgorithm(boost::shared_ptr<WarningGeneratorAlgorithm> &algorithm)
 {
-    if(algorithm != nullptr)
-    {
-        warning_generator_algorithm.reset(algorithm);
-        ROS_DEBUG("WarningGenerator::setWarningGeneratorAlgorithm: set new algorithm.");
-    }
+    warning_generator_algorithm.swap(algorithm);
+    ROS_DEBUG("WarningGenerator::setWarningGeneratorAlgorithm: set new algorithm.");
 }
 
 void WarningGenerator::setCollisionWarningPublisher(ros::Publisher &publisher)

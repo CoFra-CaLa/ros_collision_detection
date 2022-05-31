@@ -59,7 +59,7 @@ public:
      * 
      * @param algorithm Pointer to an concrete instance of a class that implements the interface WarningGeneratorAlgorithm.
      */
-    void setWarningGeneratorAlgorithm(WarningGeneratorAlgorithm *algorithm);
+    void setWarningGeneratorAlgorithm(boost::shared_ptr<WarningGeneratorAlgorithm> &algorithm);
 
     /**
      * @brief Set the Collision Warning Publisher member variable.
