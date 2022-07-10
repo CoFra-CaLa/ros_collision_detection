@@ -84,9 +84,9 @@ object_motion_t TTCCalculator::createObjectMotionFromPerceivedObjectMotion(const
     float bumper_pos_y = perceived_object_motion_msg->object_movement.position.y;
     float heading = perceived_object_motion_msg->object_movement.heading;
     float x_length = perceived_object_motion_msg->x_length;
-    result.center_pos_x = bumper_pos_x - 0.5 * sin(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
-    result.center_pos_y = bumper_pos_y - 0.5 * cos(heading * M_PI / 180.0) * x_length; // TODO: check for float/double converting issues
-    result.length = x_length;   // TODO: decide which is length, and width
+    result.center_pos_x = bumper_pos_x - 0.5 * sin(heading * M_PI / 180.0) * x_length;
+    result.center_pos_y = bumper_pos_y - 0.5 * cos(heading * M_PI / 180.0) * x_length;
+    result.length = x_length;
     result.width = perceived_object_motion_msg->y_length;
     result.heading = heading;
     result.speed = perceived_object_motion_msg->object_movement.speed;

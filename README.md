@@ -55,7 +55,7 @@ $ catkin build
 
 If you would rather like to use `catkin_make`, follow the instructions in [Create a ROS Workspace](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment/#Create_a_ROS_Workspace) on the Wiki.
 
-Make sure you also add the following line for the setup.bash script to your `.bashrc` file (adjust the workspace path if necessary:
+Make sure you also add the following line for the setup.bash script to your `.bashrc` file (adjust the workspace path if necessary):
 ```bash
 source ~/catkin_ws/devel/setup.bash
 ```
@@ -103,6 +103,7 @@ $ roslaunch ros_collision_detection default.launch
 You can set the following launch parameters:
 | Parameter Name                        | Description                                                          |
 | :------------------------------------ | :------------------------------------------------------------------- |
+| publish_topic                         | Name of the topic that the collision warnings are published to       |
 | ttc_algorithm_classname               | Name of the concrete TTC Algorithm plugin to be loaded               |
 | warning_generator_algorithm_classname | Name of the concrete Warning Generator Algorithm plugin to be loaded |       
 | ttc_algorithm_circle_count            | Number of circles used to represent a vehicle                        |
@@ -117,7 +118,7 @@ This section contains additional information about the package and the node.
 
 ### 4.1 Node Topics
 
-The node uses the following topics to receive input and publish warnings:
+The node uses the following default topics to receive input and publish warnings:
 | Topic              | Message Type         | Input/Output | Description                            |
 |:------------------ | :------------------- | :----------- | :------------------------------------- |
 | /ego_position      | SubjectVehicleMotion | Input        | The motion of the subject vehicle      |
@@ -132,15 +133,15 @@ The package structure is predefined by ROS:
 ├── CMakeLists.txt
 ├── include
 │   └── ros_collision_detection
-│       ├── *.h (C++ Headers)
+│       └── *.h (C++ Headers)
 ├── launch
-│   ├── *.launch (Launch files)
+│   └── *.launch (Launch files)
 ├── msg
-│   ├── *.msg (Message definitions)
+│   └── *.msg (Message definitions)
 ├── package.xml
 ├── README.md
 ├── src
-│   ├── *.cpp (Node source code)
+│   └── *.cpp (Node source code)
 ├── test
 │   └── *.cpp (Tests)
 ├── ttc_algorithm_plugins.xml

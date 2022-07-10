@@ -13,6 +13,7 @@
 #include <ros_collision_detection/collision_detection.h>
 
 // definition of default values for launch parameters
+#define DEFAULT_PUBLISH_TOPIC "/collision_warning"
 #define DEFAULT_TTC_ALGORITHM_CLASSNAME "CircleAlgorithm"
 #define DEFAULT_WARNING_GENERATOR_ALGORITHM_CLASSNAME "TTCOnlyWarningAlgorithm"
 #define DEFAULT_TTC_ALGORITHM_CIRCLE_COUNT 1
@@ -38,7 +39,7 @@ void CollisionDetection::init()
     // register callback from ttc_calculator to warning_generator
     ttc_calculator.addWarningSignalCallback(boost::bind(&WarningGenerator::createWarning, &warning_generator, _1, _2, _3)); 
     
-    collision_warning_publisher = node_handle->advertise<ros_collision_detection::CollisionCheckResult>("/collision_warning", 10);
+    //collision_warning_publisher = node_handle->advertise<ros_collision_detection::CollisionCheckResult>("/collision_warning", 10);
     fused_objects_subscriber.subscribe(*node_handle, "/fused_objects", 100);
     ego_position_subscriber.subscribe(*node_handle, "/ego_position", 100);
     approximate_synchronizer.registerCallback(boost::bind(&CollisionDetection::callback, this, _1, _2));
@@ -52,7 +53,7 @@ void CollisionDetection::initFromLaunchParameters()
     // Check launch parameters and set defaults if necessary
     checkLaunchParameters();
 
-    // load the concrete TTC Algorithm class
+    // load the concrete TTC Algorithm and Warning Generator classes
     loadPlugins();
 
     // initialize TTC Calculator and Warning Generator components with launch parameters
@@ -61,6 +62,13 @@ void CollisionDetection::initFromLaunchParameters()
 
 void CollisionDetection::checkLaunchParameters()
 {
+    if(!node_handle->hasParam("publish_topic"))
+    {
+        // Default value for param "publish_topic" is DEFAULT_PUBLISH_TOPIC
+        node_handle->setParam("publish_topic", DEFAULT_PUBLISH_TOPIC);
+        ROS_WARN("CollisionDetection::loadPlugins: using default value for 'publish_topic'.");
+    }
+
     if(!node_handle->hasParam("ttc_algorithm_classname"))
     {
         // Default value for param "ttc_algorithm_classname" is DEFAULT_TTC_ALGORITHM_CLASSNAME
@@ -162,6 +170,19 @@ void CollisionDetection::loadPlugins()
 
 void CollisionDetection::initComponents()
 {
+    // set topic for collision warnings according to parameter
+    std::string publish_topic_name;
+    if(node_handle->getParam("publish_topic", publish_topic_name))
+    {
+        collision_warning_publisher = node_handle->advertise<ros_collision_detection::CollisionCheckResult>(publish_topic_name, 10);
+    }
+    else
+    {
+        ROS_FATAL("CollisionDetection::initComponents: parameter 'publish_topic' could not be retrieved.");
+        ros::shutdown();
+        exit(0);
+    }
+
     float subject_vehicle_length;   //!< The length of the subject vehicle
     float subject_vehicle_width;    //!< The width of the subject vehicle
 
@@ -197,7 +218,7 @@ void CollisionDetection::callback(const ros_collision_detection::PerceivedObject
 
 int main(int argc, char **argv) 
 {
-    ros::init(argc, argv, "collision_detecion");
+    ros::init(argc, argv, "collision_detecion",ros::init_options::AnonymousName); // create anonymous node if node if same name exists
     ros::NodeHandle nh;
     CollisionDetection collision_detection(&nh);
 

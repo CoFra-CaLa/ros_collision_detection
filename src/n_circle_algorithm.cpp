@@ -29,7 +29,7 @@ void NCircleAlgorithm::init(parameter_map_t &parameter_map)
         if(int *circle_count_ptr = boost::get<int>(&variant_circle_count))
         {
             int cirlce_count = *circle_count_ptr;
-            if(cirlce_count > 1)
+            if(cirlce_count >= 1)
             {
                 n = cirlce_count;
                 ROS_INFO("NCircleAlgorithm::init with n = %d.", cirlce_count);

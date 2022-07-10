@@ -3,5 +3,5 @@
   <param name="ttc_algorithm_classname" value="CircleAlgorithm" type="str" />
   <param name="warning_generator_algorithm_classname" value="TTCOnlyWarningAlgorithm" type="str" />
   <param name="subject_vehicle_length" value="5" type="double" />
-  <param name="subject_vehicle_width" value="2" type="double" />
+  <param name="subject_vehicle_width" value="1.8" type="double" />
 </launch>
