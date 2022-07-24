@@ -137,6 +137,7 @@ The package structure is predefined by ROS:
 │       └── *.h (C++ Headers)
 ├── launch
 │   └── *.launch (Launch files)
+├── LICENSE
 ├── msg
 │   └── *.msg (Message definitions)
 ├── package.xml
