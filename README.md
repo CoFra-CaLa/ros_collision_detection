@@ -1,6 +1,7 @@
 # ROS Collision Detection
 
 ROS Collision Detection package provides a ROS node that calculates the **T**ime-**T**o-**C**ollision (TTC) between a subject vehicle and all perceived vehicles in the subject vehicle's sourroundings and publishes warnings accordingly.
+A circle-based algorithm is used to calculate the TTC. The collision warnings are based on the TTC.
 
 ---
 
